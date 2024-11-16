@@ -2,7 +2,6 @@
 include '../../../Controller/eventController.php'; // Include the event controller
 
 // Add an event
-// Add an event
 if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'])) {
     if (!empty($_POST['event_name']) && !empty($_POST['event_description']) && !empty($_POST['event_date']) && !empty($_POST['event_location'])) {
         try {
@@ -32,33 +31,39 @@ if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'
 }
 
 
+
 // Update an event
-// Update an event
-if (isset($_POST['event_id']) && !empty($_POST['event_id'])) {
-    if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'])) {
-        try {
-            $eventDate = new DateTime($_POST['event_date']);
 
-            $updatedEvent = new Event(
-                $_POST['event_id'],
-                $_POST['event_name'] ?: null,
-                $_POST['event_description'] ?: null,
-                $eventDate->format('Y-m-d') ?: null,
-                $_POST['event_location'] ?: null
-            );
+// Check if the form is submitted to update the event
+if (isset($_POST['event_name']) && isset($_POST['event_description']) && isset($_POST['event_date']) && isset($_POST['event_location']) && isset($_POST['event_id'])) {
+    // Ensure no fields are empty, but also ensure the event_date is in a valid format
+    if (!empty($_POST['event_name']) || !empty($_POST['event_description']) || !empty($_POST['event_date']) || !empty($_POST['event_location'])) {
+        
+        
+        // Create the updated event object
+        $updatedEvent = new Event(
+            $_POST['event_id'],
+            $_POST['event_name'],
+            $_POST['event_description'],
+            $eventDate,  // Pass the DateTime object
+            $_POST['event_location']
+        );
 
-            $eventsController = new eventsController();
-            $eventsController->updateEvent($updatedEvent);
+        // Create an instance of eventsController
+        $eventsController = new eventsController();
 
-            header('Location: event.php?update=success');
-            exit;
-        } catch (Exception $e) {
-            echo "Error while updating event: " . $e->getMessage();
-        }
+        // Update the event in the database
+        $eventsController->updateEvent($updatedEvent);
+
+        // Redirect to the events list page after update
+        header('Location: events.php');
+        exit;
     } else {
         echo "Please fill in at least one field to update.";
     }
 }
+
+
 // Delete an event
 if (isset($_POST['delete_event_id'])) {
     $deleteEventId = (int)$_POST['delete_event_id'];

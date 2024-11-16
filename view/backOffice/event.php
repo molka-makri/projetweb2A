@@ -1,75 +1,83 @@
 <?php
 include '../../Controller/eventController.php'; // Include the event controller
 
-// Check if form data is received via POST to add an event
-if (isset($_POST['event_name']) && isset($_POST['event_description']) && isset($_POST['event_date']) && isset($_POST['event_location'])) {
-    // Ensure no field is empty
-    if (!empty($_POST['event_name']) && !empty($_POST['event_description']) && !empty($_POST['event_date']) && !empty($_POST['event_location'])) {
-        // Create a new Event object
-        $event = new Event(
-            null, // Assuming Event_id is auto-generated
-            $_POST['event_name'], 
-            $_POST['event_description'], 
-            $_POST['event_date'], 
-            $_POST['event_location']
-        );
+// Add an event
+if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'])) {
+  if (!empty($_POST['event_name']) && !empty($_POST['event_description']) && !empty($_POST['event_date']) && !empty($_POST['event_location'])) {
+      try {
+          // Convert event_date to DateTime if required
+          $eventDate = new DateTime($_POST['event_date']);
 
-        // Create an instance of eventController and add the event
-        $eventsController = new eventsController();
-        $eventsController->addEvent($event);
+          // Create a new Event object
+          $event = new Event(
+              null,
+              $_POST['event_name'],
+              $_POST['event_description'],
+              $eventDate,
+              $_POST['event_location']
+          );
 
-        // Redirect to the event list page after successful addition
-        header('Location:event.php');
-    } else {
-        echo "Please fill in all fields.";
-    }
+          $eventsController = new eventsController();
+          $eventsController->addEvent($event);
+
+          header('Location: event.php?success=1');
+          exit;
+      } catch (Exception $e) {
+          echo "Error while adding event: " . $e->getMessage();
+      }
+  } else {
+      echo "Please fill in all fields.";
+  }
 }
 
-// Check if form is submitted to update the event
-if (isset($_POST['event_name']) || isset($_POST['event_description']) || isset($_POST['event_date']) || isset($_POST['event_location']) || isset($_POST['event_id'])) {
-    // Ensure no fields are empty
-    if (!empty($_POST['event_name']) || !empty($_POST['event_description']) || !empty($_POST['event_date']) || !empty($_POST['event_location'])) {
-        // Create the updated Event object
-        $updatedEvent = new Event(
-            $_POST['event_id'],
-            $_POST['event_name'],
-            $_POST['event_description'],
-            $_POST['event_date'],
-            $_POST['event_location']
-        );
 
-        // Create an instance of eventController
-        $eventsController = new eventsController();
 
-        // Update the event in the database
-        $eventsController->updateEvent($updatedEvent);
+// Update an event
+if (isset($_POST['event_id']) && !empty($_POST['event_id'])) {
+  if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'])) {
+      try {
+          $eventDate = new DateTime($_POST['event_date']);
 
-        // Redirect to the event list page after update
-        header('Location:event.php');
-        exit;
-    } else {
-        echo "Please fill in at least one field to update.";
-    }
+          $updatedEvent = new Event(
+              $_POST['event_id'],
+              $_POST['event_name'] ?: null,
+              $_POST['event_description'] ?: null,
+              $eventDate->format('Y-m-d') ?: null,
+              $_POST['event_location'] ?: null
+          );
+
+          $eventsController = new eventsController();
+          $eventsController->updateEvent($updatedEvent);
+
+          header('Location: event.php?update=success');
+          exit;
+      } catch (Exception $e) {
+          echo "Error while updating event: " . $e->getMessage();
+      }
+  } else {
+      echo "Please fill in at least one field to update.";
+  }
 }
 
-// Check if a delete request is made
+// Delete an event
 if (isset($_POST['delete_event_id'])) {
-    // Ensure the ID is provided
     $deleteEventId = (int)$_POST['delete_event_id'];
 
     if ($deleteEventId > 0) {
-        // Create an instance of the controller and delete the event
-        $eventsController = new eventsController();
-        $eventsController->deleteEvent($deleteEventId);
+        try {
+            $eventsController = new eventsController();
+            $eventsController->deleteEvent($deleteEventId);
 
-        // Redirect to the event list page after deletion
-        header('Location:event.php');
-        exit;
+            header('Location:event.php');
+        } catch (Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
     } else {
         echo "Invalid event ID.";
     }
 }
 ?>
+
 
 
 
@@ -812,7 +820,7 @@ if (isset($_POST['delete_event_id'])) {
 
           <div class="page-category">Inner page content goes here</div>
           
-        LEHNE ZID CRUD EVENTS
+        
         <div class="container mt-5">
     <h2 class="mb-4">Add Event</h2>
     <form action="event.php" method="post">
@@ -829,8 +837,8 @@ if (isset($_POST['delete_event_id'])) {
             <input type="date" class="form-control" id="eventDate" name="event_date" required>
         </div>
         <div class="mb-3">
-            <label for="eventPlace" class="form-label">Event Place</label>
-            <input type="text" class="form-control" id="eventPlace" name="event_place" required>
+            <label for="eventlocation" class="form-label">Event location</label>
+            <input type="text" class="form-control" id="eventlocation" name="event_location" required>
         </div>
         <button type="submit" class="btn btn-primary">Add Event</button>
     </form>
@@ -858,7 +866,7 @@ if (isset($_POST['delete_event_id'])) {
             echo "<h5 class='card-title'>" . htmlspecialchars($event['Event_name']) . "</h5>";
             echo "<p class='card-text'>" . htmlspecialchars($event['Event_description']) . "</p>";
             echo "<p class='card-text'><strong>Date: " . htmlspecialchars($event['Event_date']) . "</strong></p>";
-            echo "<p class='card-text'><small class='text-muted'>Place: " . htmlspecialchars($event['Event_place']) . "</small></p>";
+            echo "<p class='card-text'><small class='text-muted'>location: " . htmlspecialchars($event['Event_location']) . "</small></p>";
             echo "</div>";
             echo "</div>";
             echo "</div>";
@@ -895,8 +903,8 @@ if (isset($_POST['delete_event_id'])) {
             <input type="date" class="form-control" id="eventDate" name="event_date" placeholder="Enter Event Date">
         </div>
         <div class="mb-3">
-            <label for="eventPlace" class="form-label">Event Place</label>
-            <input type="text" class="form-control" id="eventPlace" name="event_place" placeholder="Enter Event Place">
+            <label for="eventlocation" class="form-label">Event location</label>
+            <input type="text" class="form-control" id="eventlocation" name="event_location" placeholder="Enter Event location">
         </div>
 
         <button type="submit" class="btn btn-primary">Update Event</button>

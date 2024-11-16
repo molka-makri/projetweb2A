@@ -49,7 +49,7 @@ class productController {
     }
 
     public function getProduct($Product_id) {
-        $sql = "SELECT * FROM products WHERE id = $id";
+        $sql = "SELECT * FROM products WHERE id = $Product_id";
         $db = config::getConnexion();
         $query = $db->prepare($sql);
 

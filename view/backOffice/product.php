@@ -25,10 +25,7 @@
             echo "Please fill in all fields."; // Show an error message if fields are empty
         }
     }
-?>
 
-
-<?php
 
 // Check if form is submitted to update the product
 if (isset($_POST['product_name']) && isset($_POST['product_description']) && isset($_POST['product_price']) && isset($_POST['product_category']) && isset($_POST['product_img']) && isset($_POST['product_id'])) {
@@ -61,9 +58,7 @@ if (isset($_POST['product_name']) && isset($_POST['product_description']) && iss
         echo "Please fill in at least one field to update.";
     }
 }
-?>
 
-<?php
 
 
 // Check if a delete request is made
@@ -165,7 +160,7 @@ if (isset($_POST['delete_product_id'])) {
         </div>
         <div class="sidebar-wrapper scrollbar scrollbar-inner">
           <div class="sidebar-content">
-            <ul class="nav nav-secondary">
+            <!-- <ul class="nav nav-secondary">
               <li class="nav-item active">
                 <a
                   data-bs-toggle="collapse"
@@ -414,7 +409,7 @@ if (isset($_POST['delete_product_id'])) {
                   </ul>
                 </div>
               </li>
-            </ul>
+            </ul> -->
           </div>
         </div>
       </div>
@@ -759,7 +754,7 @@ if (isset($_POST['delete_product_id'])) {
                     </div>
                     <span class="profile-username">
                       <span class="op-7">Hi,</span>
-                      <span class="fw-bold">Hizrian</span>
+                      <span class="fw-bold">admin</span>
                     </span>
                   </a>
                   <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -806,7 +801,7 @@ if (isset($_POST['delete_product_id'])) {
         <div class="container">
           <div class="page-inner">
             <div class="page-header">
-              <h4 class="page-title">Manage users</h4>
+              <h4 class="page-title">Manage Products</h4>
               <ul class="breadcrumbs">
                 <li class="nav-home">
                   <a href="#">
@@ -828,31 +823,31 @@ if (isset($_POST['delete_product_id'])) {
               </ul>
             </div>
 
-          <div class="page-category">Inner page content goes here</div>
+          <div class="page-category"></div>
           
-        LEHNE ZID CRUD PRODUCTS
+        
         <div class="container mt-5">
     <h2 class="mb-4">Add Product</h2>
     <form action="product.php" method="post">
         <div class="mb-3">
             <label for="productName" class="form-label">Product Name</label>
-            <input type="text" class="form-control" id="productName" name="product_name" required>
+            <input type="text" class="form-control" id="productName" name="product_name" >
         </div>
         <div class="mb-3">
             <label for="productDescription" class="form-label">Product Description</label>
-            <textarea class="form-control" id="productDescription" name="product_description" rows="3" required></textarea>
+            <textarea class="form-control" id="productDescription" name="product_description" rows="3" ></textarea>
         </div>
         <div class="mb-3">
             <label for="productPrice" class="form-label">Product Price</label>
-            <input type="number" class="form-control" id="productPrice" name="product_price" required>
+            <input type="number" class="form-control" id="productPrice" name="product_price">
         </div>
         <div class="mb-3">
             <label for="productCategory" class="form-label">Product Category</label>
-            <input type="text" class="form-control" id="productCategory" name="product_category" required>
+            <input type="text" class="form-control" id="productCategory" name="product_category" >
         </div>
         <div class="mb-3">
             <label for="productImage" class="form-label">Product Image URL</label>
-            <input type="url" class="form-control" id="productImage" name="product_img" required>
+            <input type="url" class="form-control" id="productImage" name="product_img" >
         </div>
         <button type="submit" class="btn btn-primary">Add Product</button>
     </form>
@@ -907,7 +902,7 @@ if (isset($_POST['delete_product_id'])) {
         <!-- Input field for Product_id -->
         <div class="mb-3">
             <label for="productId" class="form-label">Product ID</label>
-            <input type="number" class="form-control" id="productId" name="product_id" placeholder="Enter Product ID" required>
+            <input type="number" class="form-control" id="productId" name="product_id" placeholder="Enter Product ID">
         </div>
 
         <!-- Input fields for Product attributes -->
@@ -1020,5 +1015,7 @@ if (isset($_POST['delete_product_id'])) {
 
     <!-- Kaiadmin JS -->
     <script src="assets/js/kaiadmin.min.js"></script>
+    <!-- <script src="product.js" defer></script> -->
+
   </body>
 </html>

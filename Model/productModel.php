@@ -5,12 +5,12 @@ class Product {
     private ?string $Product_name;
     private ?string $Product_description;
     private ?int $Product_price;
-    private ?string $Product_categorie;
+    private ?int $Product_categorie;
     private ?string $Product_img;
    
 
     // Constructor
-    public function __construct(?int $Product_id, ?string $Product_name, ?string $Product_description, ?int $Product_price, ?string $Product_categorie, ?string $Product_img) {
+    public function __construct(?int $Product_id, ?string $Product_name, ?string $Product_description, ?int $Product_price, ?int $Product_categorie, ?string $Product_img) {
         $this->Product_id = $Product_id;
         $this->Product_name = $Product_name;
         $this->Product_description = $Product_description;
@@ -54,11 +54,11 @@ class Product {
         $this->Product_price = $Product_price;
     }
 
-    public function getProduct_categorie(): ?string {
+    public function getProduct_categorie(): ?int {
         return $this->Product_categorie;
     }
 
-    public function setProduct_categorie(?string $Product_categorie): void {
+    public function setProduct_categorie(?int $Product_categorie): void {
         $this->Product_categorie = $Product_categorie;
     }
 

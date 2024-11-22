@@ -1,63 +1,95 @@
+
+
+
+
+
 <?php
-    include '../../Controller/productController.php'; // Include the product controller
-
-    // Check if form data is received via POST
-    if(isset($_POST['product_name']) && isset($_POST['product_description']) && isset($_POST['product_price']) && isset($_POST['product_category']) && isset($_POST['product_img'])) {
-        // Ensure no field is empty
-        if(!empty($_POST['product_name']) && !empty($_POST['product_description']) && !empty($_POST['product_price']) && !empty($_POST['product_category']) && !empty($_POST['product_img'])) {
-            // Create a new Product object
-            $product = new Product(
-                null, // Assuming Product_id is auto-generated
-                $_POST['product_name'], 
-                $_POST['product_description'], 
-                $_POST['product_price'],
-                $_POST['product_category'],
-                $_POST['product_img']
-            );
-
-            // Create an instance of productController and add the product
-            $productController = new productController();
-            $productController->addProduct($product); // Add the product to the database
-
-            // Redirect to the product list page after successful addition
-            header('Location:product.php'); // You can change this to your preferred redirect page
-        } else {
-            echo "Please fill in all fields."; // Show an error message if fields are empty
-        }
-    }
 
 
-// Check if form is submitted to update the product
-if (isset($_POST['product_name']) && isset($_POST['product_description']) && isset($_POST['product_price']) && isset($_POST['product_category']) && isset($_POST['product_img']) && isset($_POST['product_id'])) {
-    // Ensure no fields are empty, but also cast product_price to integer
-    if (!empty($_POST['product_name']) || !empty($_POST['product_description']) || !empty($_POST['product_price']) || !empty($_POST['product_category']) || !empty($_POST['product_img'])) {
-        
-        // Ensure Product_price is an integer
-        $productPrice = is_numeric($_POST['product_price']) ? (int)$_POST['product_price'] : null;
 
-        // Create the updated product object
-        $updatedProduct = new Product(
-            $_POST['product_id'],
-            $_POST['product_name'],
-            $_POST['product_description'],
-            $productPrice,  // Pass the integer value of Product_price
-            $_POST['product_category'],
-            $_POST['product_img']
-        );
+include '../../Controller/productController.php'; // Include the product controller
+include (__DIR__ . '/../../Controller/productCategoryController.php'); // Include the product category controller
 
-        // Create an instance of productController
-        $productController = new productController();
+$categoryController = new productCategoryController();
+$categories = $categoryController->getCategories();
 
-        // Update the product in the database
-        $productController->updateProduct($updatedProduct);
+$productController = new productController();
 
-        // Redirect to the product list page after update
-        header('Location:product.php');
-        exit;
-    } else {
-        echo "Please fill in at least one field to update.";
-    }
+// Handling the form submission for product addition or updating
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Check if product_id is set to determine if we're adding or editing a product
+  if (isset($_POST['product_id']) && !empty($_POST['product_id'])) {
+      // This is the Edit Product form
+      if (
+          !empty($_POST['product_name']) || 
+          !empty($_POST['product_description']) || 
+          !empty($_POST['product_price']) || 
+          !empty($_POST['product_category']) || 
+          !empty($_POST['product_img'])
+      ) {
+          // Ensure Product_price is numeric, if provided
+          $productPrice = !empty($_POST['product_price']) && is_numeric($_POST['product_price']) 
+              ? (int)$_POST['product_price'] 
+              : null;
+
+          // Ensure product category is numeric (cast to int)
+          $productCategory = isset($_POST['product_category']) && is_numeric($_POST['product_category'])
+              ? (int)$_POST['product_category']
+              : null;
+
+          // Create the updated product object
+          $updatedProduct = new Product(
+              $_POST['product_id'],              // Product ID (must be filled)
+              $_POST['product_name'] ?? null,    // Product Name (optional)
+              $_POST['product_description'] ?? null,  // Product Description (optional)
+              $productPrice,                     // Product Price (integer or null)
+              $productCategory,                  // Product Category (int or null)
+              $_POST['product_img'] ?? null      // Product Image URL (optional)
+          );
+
+          // Update the product in the database
+          $productController->updateProduct($updatedProduct);
+
+          // Redirect to the product list page after successful update
+          header('Location: product.php');
+          exit;
+      } else {
+          echo "Product ID must be filled, and at least one other field must have a value.";
+      }
+  } else {
+      // This is the Add Product form (no product_id set)
+      if (
+          !empty($_POST['product_name']) && 
+          !empty($_POST['product_description']) && 
+          !empty($_POST['product_price']) && 
+          !empty($_POST['product_category']) && 
+          !empty($_POST['product_img'])
+      ) {
+          // Ensure product category is numeric (cast to int)
+          $product_category = is_numeric($_POST['product_category']) ? (int)$_POST['product_category'] : 0;
+
+          // Create a new Product object
+          $product = new Product(
+              null, // Product_id is auto-generated
+              $_POST['product_name'], 
+              $_POST['product_description'], 
+              $_POST['product_price'],
+              $product_category,  // Now properly casted to integer
+              $_POST['product_img']
+          );
+
+          // Add the product to the database
+          $productController->addProduct($product);
+
+          // Redirect to the product list page after successful addition
+          header('Location: product.php');
+          exit;
+      } else {
+          echo "Please fill in all fields."; // Show an error message if fields are empty
+      }
+  }
 }
+
 
 
 
@@ -828,29 +860,36 @@ if (isset($_POST['delete_product_id'])) {
         
         <div class="container mt-5">
     <h2 class="mb-4">Add Product</h2>
-    <form action="product.php" method="post">
-        <div class="mb-3">
-            <label for="productName" class="form-label">Product Name</label>
-            <input type="text" class="form-control" id="productName" name="product_name" >
-        </div>
-        <div class="mb-3">
-            <label for="productDescription" class="form-label">Product Description</label>
-            <textarea class="form-control" id="productDescription" name="product_description" rows="3" ></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="productPrice" class="form-label">Product Price</label>
-            <input type="number" class="form-control" id="productPrice" name="product_price">
-        </div>
-        <div class="mb-3">
-            <label for="productCategory" class="form-label">Product Category</label>
-            <input type="text" class="form-control" id="productCategory" name="product_category" >
-        </div>
-        <div class="mb-3">
-            <label for="productImage" class="form-label">Product Image URL</label>
-            <input type="url" class="form-control" id="productImage" name="product_img" >
-        </div>
-        <button type="submit" class="btn btn-primary">Add Product</button>
-    </form>
+    <form id="addForm" action="product.php" method="post">
+    <div class="mb-3">
+        <label for="productName" class="form-label">Product Name</label>
+        <input type="text" class="form-control" id="productName" name="product_name">
+    </div>
+    <div class="mb-3">
+        <label for="productDescription" class="form-label">Product Description</label>
+        <textarea class="form-control" id="productDescription" name="product_description" rows="3" ></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="productPrice" class="form-label">Product Price</label>
+        <input type="number" class="form-control" id="productPrice" name="product_price" >
+    </div>
+    <div class="mb-3">
+        <label for="productCategory" class="form-label">Product Category</label>
+        <select class="form-control" id="productCategory" name="product_category" >
+            <option value="">Select a category</option>
+            <?php foreach ($categories as $category): ?>
+                <option value="<?= htmlspecialchars($category['category_id']) ?>">
+                    <?= htmlspecialchars($category['category']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="productImage" class="form-label">Product Image URL</label>
+        <input type="url" class="form-control" id="productImage" name="product_img" >
+    </div>
+    <button type="submit" class="btn btn-primary">Add Product</button>
+</form>
 </div>
         
 <div class="container mt-5">
@@ -896,40 +935,51 @@ if (isset($_POST['delete_product_id'])) {
     
    
 
-<div class="container mt-5">
-    <h2>Edit Product</h2>
-    <form action="product.php" method="post">
-        <!-- Input field for Product_id -->
-        <div class="mb-3">
-            <label for="productId" class="form-label">Product ID</label>
-            <input type="number" class="form-control" id="productId" name="product_id" placeholder="Enter Product ID">
-        </div>
+      <div class="container mt-5">
+          <h2>Edit Product</h2>
+          <form name="editForm" action="product.php" method="post">
+          <div class="mb-3">
+              <label for="productId" class="form-label">Product ID</label>
+              <input type="number" class="form-control" id="productId" name="product_id" placeholder="Enter Product ID" >
+          </div>
 
-        <!-- Input fields for Product attributes -->
-        <div class="mb-3">
-            <label for="productName" class="form-label">Product Name</label>
-            <input type="text" class="form-control" id="productName" name="product_name" placeholder="Enter Product Name">
-        </div>
-        <div class="mb-3">
-            <label for="productDescription" class="form-label">Product Description</label>
-            <textarea class="form-control" id="productDescription" name="product_description" rows="3" placeholder="Enter Product Description"></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="productPrice" class="form-label">Product Price</label>
-            <input type="number" class="form-control" id="productPrice" name="product_price" placeholder="Enter Product Price">
-        </div>
-        <div class="mb-3">
-            <label for="productCategory" class="form-label">Product Category</label>
-            <input type="text" class="form-control" id="productCategory" name="product_category" placeholder="Enter Product Category">
-        </div>
-        <div class="mb-3">
-            <label for="productImage" class="form-label">Product Image URL</label>
-            <input type="url" class="form-control" id="productImage" name="product_img" placeholder="Enter Product Image URL">
-        </div>
+          <div class="mb-3">
+              <label for="productName" class="form-label">Product Name</label>
+              <input type="text" class="form-control" id="productName" name="product_name" placeholder="Enter Product Name" >
+          </div>
+          <div class="mb-3">
+              <label for="productDescription" class="form-label">Product Description</label>
+              <textarea class="form-control" id="productDescription" name="product_description" rows="3" placeholder="Enter Product Description"></textarea>
+          </div>
+          <div class="mb-3">
+              <label for="productPrice" class="form-label">Product Price</label>
+              <input type="number" class="form-control" id="productPrice" name="product_price" placeholder="Enter Product Price" >
+          </div>
+          <div class="mb-3">
+              <label for="productCategory" class="form-label">Product Category</label>
+              <select class="form-select" id="productCategory" name="product_category" >
+                  <option value="">Select Category</option>
+                  <?php
+                  include_once 'path_to_controller/productCategoryController.php'; // Adjust the path as needed
 
-        <button type="submit" class="btn btn-primary">Update Product</button>
-    </form>
-</div>
+                  $categoryController = new productCategoryController();
+                  $categories = $categoryController->getCategories();
+
+                  foreach ($categories as $category) {
+                      echo "<option value='" . htmlspecialchars($category['category_id']) . "'>" . htmlspecialchars($category['category']) . "</option>";
+                  }
+                  ?>
+              </select>
+          </div>
+
+          <div class="mb-3">
+              <label for="productImage" class="form-label">Product Image URL</label>
+              <input type="url" class="form-control" id="productImage" name="product_img" placeholder="Enter Product Image URL">
+          </div>
+
+          <button type="submit" class="btn btn-primary">Update Product</button>
+      </form>
+      </div>
     
 
 <!-- HTML form to delete a product -->
@@ -1015,7 +1065,10 @@ if (isset($_POST['delete_product_id'])) {
 
     <!-- Kaiadmin JS -->
     <script src="assets/js/kaiadmin.min.js"></script>
-    <!-- <script src="product.js" defer></script> -->
+
+
+    
+    <script src="product.js" ></script>
 
   </body>
 </html>

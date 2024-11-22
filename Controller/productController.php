@@ -4,7 +4,19 @@ include(__DIR__ . '/../Model/productModel.php');
 
 class productController {
     public function getProducts() {
-        $sql = "SELECT * FROM products";
+                $sql = " SELECT 
+                products.Product_img, 
+                products.Product_name, 
+                products.Product_description, 
+                products.Product_price, 
+                products_categories.category AS Product_categorie 
+            FROM 
+                products 
+            INNER JOIN 
+                products_categories 
+            ON 
+                products.Product_categorie = products_categories.category_id
+            ";
         $db = config::getConnexion();
 
         try {

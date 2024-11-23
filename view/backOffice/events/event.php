@@ -1,5 +1,5 @@
 <?php
-include '../../../Controller/eventController.php'; // Include the event controller
+include '../../../Controller/eventController.php'; 
 
 // Add an event
 if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'])) {
@@ -8,7 +8,7 @@ if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'
             // Convert event_date to DateTime if required
             $eventDate = new DateTime($_POST['event_date']);
 
-            // Create a new Event object
+           
             $event = new Event(
                 null,
                 $_POST['event_name'],
@@ -21,7 +21,7 @@ if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'
             $eventsController->addEvent($event);
 
             header('Location: event.php?success=1');
-            exit;
+            
         } catch (Exception $e) {
             echo "Error while adding event: " . $e->getMessage();
         }
@@ -30,36 +30,29 @@ if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'
     }
 }
 
-
-
 // Update an event
-
-// Check if the form is submitted to update the event
 if (isset($_POST['event_name']) && isset($_POST['event_description']) && isset($_POST['event_date']) && isset($_POST['event_location']) && isset($_POST['event_id'])) {
-    // Ensure no fields are empty, but also ensure the event_date is in a valid format
     if (!empty($_POST['event_name']) || !empty($_POST['event_description']) || !empty($_POST['event_date']) || !empty($_POST['event_location'])) {
         
-        
-        // Create the updated event object
+        // Ensure $eventDate is properly initialized
+        $eventDate = !empty($_POST['event_date']) ? new DateTime($_POST['event_date']) : null;
+
+        // Create the event object
         $updatedEvent = new Event(
             $_POST['event_id'],
             $_POST['event_name'],
             $_POST['event_description'],
-            $eventDate,  // Pass the DateTime object
+            $eventDate, // Pass the DateTime object or null
             $_POST['event_location']
         );
 
-        // Create an instance of eventsController
         $eventsController = new eventsController();
-
-        // Update the event in the database
         $eventsController->updateEvent($updatedEvent);
 
-        // Redirect to the events list page after update
-        header('Location: events.php');
+        header('Location: event.php?success=1');
         exit;
     } else {
-        echo "Please fill in at least one field to update.";
+        echo "Please fill in all fields.";
     }
 }
 
@@ -82,8 +75,20 @@ if (isset($_POST['delete_event_id'])) {
     }
 }
 ?>
-<h2 class="mb-4">Add Event</h2>
-    <form action="event.php" method="post">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4">Add Event</h2>
+    <form id="addEventForm" action="event.php" method="post">
         <div class="mb-3">
             <label for="eventName" class="form-label">Event Name</label>
             <input type="text" class="form-control" id="eventName" name="event_name" required>
@@ -97,28 +102,23 @@ if (isset($_POST['delete_event_id'])) {
             <input type="date" class="form-control" id="eventDate" name="event_date" required>
         </div>
         <div class="mb-3">
-            <label for="eventlocation" class="form-label">Event location</label>
-            <input type="text" class="form-control" id="eventlocaton" name="event_location" required>
+            <label for="eventLocation" class="form-label">Event location</label>
+            <input type="text" class="form-control" id="eventLocation" name="event_location" required>
         </div>
         <button type="submit" class="btn btn-primary">Add Event</button>
     </form>
 </div>
 
-<div class="container mt-5">
-    <?php
-    // Create an instance of eventController
-    $eventsController = new eventsController();
 
-    // Get all events from the database
+<div class="container mt-5">
+    <h2>Event List</h2>
+    <?php
+    $eventsController = new eventsController();
     $events = $eventsController->getEvents();
 
-    // Check if there are events
     if ($events && $events->rowCount() > 0) {
-        echo "<div class='container mt-5'>";
-        echo "<h2 class='mb-4'>Event List</h2>";
-        echo "<div class='row'>"; // Bootstrap grid starts here
+        echo "<div class='row'>";
 
-        // Loop through the events and display them as cards
         while ($event = $events->fetch(PDO::FETCH_ASSOC)) {
             echo "<div class='col-md-4 mb-4'>";
             echo "<div class='card'>";
@@ -127,12 +127,12 @@ if (isset($_POST['delete_event_id'])) {
             echo "<p class='card-text'>" . htmlspecialchars($event['Event_description']) . "</p>";
             echo "<p class='card-text'><strong>Date: " . htmlspecialchars($event['Event_date']) . "</strong></p>";
             echo "<p class='card-text'><small class='text-muted'>Place: " . htmlspecialchars($event['Event_location']) . "</small></p>";
+            echo "<p class='card-text'><small class='text-muted'>ID: " . htmlspecialchars($event['Event_id']) . "</small></p>";
             echo "</div>";
             echo "</div>";
             echo "</div>";
         }
 
-        echo "</div>"; // Bootstrap grid ends here
         echo "</div>";
     } else {
         echo "<p>No events found.</p>";
@@ -140,16 +140,14 @@ if (isset($_POST['delete_event_id'])) {
     ?>
 </div>
 
+<!-- Edit Event Form -->
 <div class="container mt-5">
     <h2>Edit Event</h2>
     <form action="event.php" method="post">
-        <!-- Input field for Event ID -->
         <div class="mb-3">
-            <label for="eventId" class="form-label">Event ID</label>
+            <label for="eventId" class="form-label">Event_id</label>
             <input type="number" class="form-control" id="eventId" name="event_id" placeholder="Enter Event ID" required>
         </div>
-
-        <!-- Input fields for Event attributes -->
         <div class="mb-3">
             <label for="eventName" class="form-label">Event Name</label>
             <input type="text" class="form-control" id="eventName" name="event_name" placeholder="Enter Event Name">
@@ -163,13 +161,13 @@ if (isset($_POST['delete_event_id'])) {
             <input type="date" class="form-control" id="eventDate" name="event_date" placeholder="Enter Event Date">
         </div>
         <div class="mb-3">
-            <label for="eventlocation" class="form-label">Event location</label>
-            <input type="text" class="form-control" id="eventlocation" name="event_location" placeholder="Enter Event Place">
+            <label for="eventLocation" class="form-label">Event location</label>
+            <input type="text" class="form-control" id="eventLocation" name="event_location" placeholder="Enter Event Place">
         </div>
-
         <button type="submit" class="btn btn-primary">Update Event</button>
     </form>
 </div>
+
 
 <div class="container mt-5">
     <h2>Delete Event</h2>
@@ -178,7 +176,12 @@ if (isset($_POST['delete_event_id'])) {
             <label for="deleteEventId" class="form-label">Event ID</label>
             <input type="number" class="form-control" id="deleteEventId" name="delete_event_id" placeholder="Enter Event ID" required>
         </div>
-        
         <button type="submit" class="btn btn-danger">Delete Event</button>
     </form>
 </div>
+
+<!-- Include Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="form.js"></script>
+</body>
+</html>

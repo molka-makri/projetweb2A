@@ -1,4 +1,5 @@
 <?php
+include(__DIR__ . '/../config.php');
 
 class Event {
     private ?int $Event_id;
@@ -6,20 +7,20 @@ class Event {
     private ?string $Event_description;
     private ?DateTime $Event_date;
     private ?string $Event_location;
+    private?int $Event_organizer;  
    
 
     // Constructor
-    public function __construct(?int $Event_id, ?string $Event_name, ?string $Event_description,?DateTime $Event_date,?string $Event_location) {
+    public function __construct(?int $Event_id, ?string $Event_name, ?string $Event_description,?DateTime $Event_date,?string $Event_location,?int $Event_organizer) {
         $this->Event_id = $Event_id;
         $this->Event_name = $Event_name;
         $this->Event_date = $Event_date;
         $this->Event_description = $Event_description;
         $this->Event_location = $Event_location;
+        $this->Event_organizer = $Event_organizer; 
         
        
     }
-
-    // Getters and Setters
 
     public function getEvent_id(): ?int {
         return $this->Event_id;
@@ -61,10 +62,56 @@ class Event {
     public function setEvent_location(?string $Event_location): void {
         $this->Event_location = $Event_location;
     }
-
+    public function getEvent_organizer():?int {
+        return $this->Event_organizer;
+    }
+    public function setEvent_organizer(?int $Event_organizer): void {
+        $this->Event_organizer = $Event_organizer;
+    }
     
-
-   
 }
+
+class Organizer {
+    private ?int $Organizer_id;
+    private ?string $Organizer_name;
+    private ?string $Organizer_email;
+   
+   
+
+    // Constructor
+    public function __construct(?int $Organizer_id, ?string $Organizer_name, ?string $Organizer_email) {
+        $this->Organizer_id = $Organizer_id;
+        $this->Organizer_name = $Organizer_name;
+        $this->Organizer_email = $Organizer_email;
+       
+    }
+
+    // Getters and Setters
+
+    public function getOrganizer_id(): ?int {
+        return $this->Organizer_id;
+    }
+
+    public function setOrganizer_id(?int $Organizer_id): void {
+        $this->Organizer_id = $Organizer_id;
+    }
+    public function getOrganizer_name(): ?string {
+        return $this->Organizer_name;
+    }
+
+    public function setOrganizer_name(?string $Organizer_name): void {
+        $this->Organizer_name = $Organizer_name;
+    }
+
+    public function getOrganizer_email(): ?string {
+        return $this->Organizer_email;
+    }
+
+    public function setOrganizer_email(?string $Organizer_email): void {
+        $this->Organizer_email = $Organizer_email;
+    }
+
+}
+   
 
 ?>

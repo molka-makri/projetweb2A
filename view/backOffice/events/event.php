@@ -2,25 +2,29 @@
 include '../../../Controller/eventController.php'; 
 
 // Add an event
-if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'])) {
-    if (!empty($_POST['event_name']) && !empty($_POST['event_description']) && !empty($_POST['event_date']) && !empty($_POST['event_location'])) {
+if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'], $_POST['event_organizer'])) {
+    if (!empty($_POST['event_name']) && !empty($_POST['event_description']) && !empty($_POST['event_date']) && !empty($_POST['event_location']) && !empty($_POST['event_organizer'])) {
         try {
             // Convert event_date to DateTime if required
             $eventDate = new DateTime($_POST['event_date']);
-
            
+            // Create the event object
             $event = new Event(
-                null,
+                null, // Event ID will be null for adding a new event
                 $_POST['event_name'],
                 $_POST['event_description'],
-                $eventDate,
-                $_POST['event_location']
+                $eventDate, // DateTime object
+                $_POST['event_location'],
+                null
             );
 
+            // Call the controller to add the event
             $eventsController = new eventsController();
             $eventsController->addEvent($event);
 
+            // Redirect to event page with success
             header('Location: event.php?success=1');
+            exit; // Make sure to call exit after header redirection
             
         } catch (Exception $e) {
             echo "Error while adding event: " . $e->getMessage();
@@ -31,31 +35,33 @@ if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'
 }
 
 // Update an event
-if (isset($_POST['event_name']) && isset($_POST['event_description']) && isset($_POST['event_date']) && isset($_POST['event_location']) && isset($_POST['event_id'])) {
-    if (!empty($_POST['event_name']) || !empty($_POST['event_description']) || !empty($_POST['event_date']) || !empty($_POST['event_location'])) {
-        
-        // Ensure $eventDate is properly initialized
+if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'], $_POST['event_id'], $_POST['event_organizer'])) {
+    if (!empty($_POST['event_name']) || !empty($_POST['event_description']) || !empty($_POST['event_date']) || !empty($_POST['event_location']) || !empty($_POST['event_organizer'])) {
+
+        // Ensure event_date is properly initialized as DateTime or null
         $eventDate = !empty($_POST['event_date']) ? new DateTime($_POST['event_date']) : null;
 
-        // Create the event object
+        // Create the updated event object
         $updatedEvent = new Event(
-            $_POST['event_id'],
+            $_POST['event_id'], // Event ID for updating
             $_POST['event_name'],
             $_POST['event_description'],
-            $eventDate, // Pass the DateTime object or null
-            $_POST['event_location']
+            $eventDate, // DateTime object or null
+            $_POST['event_location'],
+            $_POST['Event_organizer']
         );
 
+        // Call the controller to update the event
         $eventsController = new eventsController();
         $eventsController->updateEvent($updatedEvent);
 
+        // Redirect to event page with success
         header('Location: event.php?success=1');
-        exit;
+        exit; // Make sure to call exit after header redirection
     } else {
-        echo "Please fill in all fields.";
+        echo "Please fill in at least one field to update.";
     }
 }
-
 
 // Delete an event
 if (isset($_POST['delete_event_id'])) {
@@ -66,7 +72,9 @@ if (isset($_POST['delete_event_id'])) {
             $eventsController = new eventsController();
             $eventsController->deleteEvent($deleteEventId);
 
-            header('Location:event.php');
+            // Redirect to event page after deletion
+            header('Location: event.php');
+            exit;
         } catch (Exception $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -102,13 +110,16 @@ if (isset($_POST['delete_event_id'])) {
             <input type="date" class="form-control" id="eventDate" name="event_date" required>
         </div>
         <div class="mb-3">
-            <label for="eventLocation" class="form-label">Event location</label>
+            <label for="eventLocation" class="form-label">Event Location</label>
             <input type="text" class="form-control" id="eventLocation" name="event_location" required>
+        </div>
+        <div class="mb-3">
+            <label for="eventOrganizer" class="form-label">Event Organizer</label>
+            <input type="number" class="form-control" id="eventOrganizer" name="Event_organizer" required>
         </div>
         <button type="submit" class="btn btn-primary">Add Event</button>
     </form>
 </div>
-
 
 <div class="container mt-5">
     <h2>Event List</h2>
@@ -127,6 +138,7 @@ if (isset($_POST['delete_event_id'])) {
             echo "<p class='card-text'>" . htmlspecialchars($event['Event_description']) . "</p>";
             echo "<p class='card-text'><strong>Date: " . htmlspecialchars($event['Event_date']) . "</strong></p>";
             echo "<p class='card-text'><small class='text-muted'>Place: " . htmlspecialchars($event['Event_location']) . "</small></p>";
+            //echo "<p class='card-text'><small class='text-muted'>Organizer: " . htmlspecialchars($event['Event_organizer.Organizer_name']) . "</small></p>";
             echo "<p class='card-text'><small class='text-muted'>ID: " . htmlspecialchars($event['Event_id']) . "</small></p>";
             echo "</div>";
             echo "</div>";
@@ -145,7 +157,7 @@ if (isset($_POST['delete_event_id'])) {
     <h2>Edit Event</h2>
     <form action="event.php" method="post">
         <div class="mb-3">
-            <label for="eventId" class="form-label">Event_id</label>
+            <label for="eventId" class="form-label">Event ID</label>
             <input type="number" class="form-control" id="eventId" name="event_id" placeholder="Enter Event ID" required>
         </div>
         <div class="mb-3">
@@ -161,13 +173,16 @@ if (isset($_POST['delete_event_id'])) {
             <input type="date" class="form-control" id="eventDate" name="event_date" placeholder="Enter Event Date">
         </div>
         <div class="mb-3">
-            <label for="eventLocation" class="form-label">Event location</label>
+            <label for="eventLocation" class="form-label">Event Location</label>
             <input type="text" class="form-control" id="eventLocation" name="event_location" placeholder="Enter Event Place">
+        </div>
+        <div class="mb-3">
+            <label for="eventOrganizer" class="form-label">Event Organizer</label>
+            <input type="text" class="form-control" id="eventOrganizer" name="Event_organizer" placeholder="Enter Event Organizer">
         </div>
         <button type="submit" class="btn btn-primary">Update Event</button>
     </form>
 </div>
-
 
 <div class="container mt-5">
     <h2>Delete Event</h2>
@@ -185,3 +200,4 @@ if (isset($_POST['delete_event_id'])) {
 <script src="form.js"></script>
 </body>
 </html>
+

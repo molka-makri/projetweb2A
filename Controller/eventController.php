@@ -1,5 +1,4 @@
 <?php
-include(__DIR__ . '/../config.php');
 include(__DIR__ . '/../Model/eventModel.php');
 
 class eventsController {
@@ -16,11 +15,10 @@ class eventsController {
         }
     }
 
-    // Add a new event
-  // Add a new event
+
 public function addEvent($event) {
-    $sql = "INSERT INTO events (Event_name, Event_description, Event_date, Event_location) 
-            VALUES (:Event_name, :Event_description, :Event_date, :Event_location)";
+    $sql = "INSERT INTO events (Event_name, Event_description, Event_date, Event_location,Event_organizer) 
+            VALUES (:Event_name, :Event_description, :Event_date, :Event_location,:Event_organizer)";
     $db = config::getConnexion();
     
     try {
@@ -35,7 +33,8 @@ public function addEvent($event) {
             'Event_name' => $event->getEvent_name(),
             'Event_description' => $event->getEvent_description(),
             'Event_date' => $formattedDate, // Use formatted date string
-            'Event_location' => $event->getEvent_location()
+            'Event_location' => $event->getEvent_location(),
+            'Event_organizer' => $event->getEvent_organizer() // Add the event organizer as an additional field in your table. If not present in your model, add it here.
         ]);
 
         if ($result) {
@@ -86,7 +85,8 @@ public function addEvent($event) {
                         Event_name = COALESCE(:Event_name, Event_name),
                         Event_description = COALESCE(:Event_description, Event_description),
                         Event_date = COALESCE(:Event_date, Event_date),
-                        Event_location = COALESCE(:Event_location, Event_location)
+                        Event_location = COALESCE(:Event_location, Event_location),
+                        Event_organizer = COALESCE(:Event_organizer, Event_organizer)
                     WHERE Event_id = :Event_id";
         
             $db = config::getConnexion();
@@ -105,7 +105,8 @@ public function addEvent($event) {
                     'Event_description' => $event->getEvent_description(),
                     'Event_date' => $formattedDate,
                     'Event_location' => $event->getEvent_location(),
-                    'Event_id' => $event->getEvent_id()
+                    'Event_id' => $event->getEvent_id(),
+                    'Event_organizer' => $event->getEvent_organizer() // Add the event organizer as an additional field in your table. If not present in your model, add it here.
                 ]);
         
                 echo "Event updated successfully!";
@@ -115,5 +116,161 @@ public function addEvent($event) {
         }
         
     }
+    
 
+    
+
+class organizersController {
+    // Fetch all organizers
+    public function getorganizers() {
+        $sql = "SELECT * FROM organizers";
+        $db = config::getConnexion();
+
+        try {
+            $list = $db->query($sql);
+            return $list;
+        } catch (Exception $err) {
+            echo $err->getMessage();
+        }
+    }
+
+    // Add a new organizer
+    public function addorganizers($organizer) {
+        $sql = "INSERT INTO organizers (Organizer_name, Organizer_email) 
+                VALUES (:Organizer_name, :Organizer_email)";
+        $db = config::getConnexion();
+    
+        try {
+            $query = $db->prepare($sql);
+            $result = $query->execute([
+                'Organizer_name' => $organizer->getOrganizer_name(),
+                'Organizer_email' => $organizer->getOrganizer_email()
+            ]);
+    
+            if ($result) {
+                echo "organizer added successfully!";
+            } else {
+                echo "Failed to add organizer.";
+            }
+        } catch (PDOException $err) {
+            echo "Error while adding organizer: " . $err->getMessage();
+            return false;
+        }
+    }
+    public function deleteorganizer($Organizer_id) {
+        $sql = "DELETE FROM organizers WHERE Organizer_id = :Organizer_id";
+        $db = config::getConnexion();
+
+        try {
+            $query = $db->prepare($sql);
+            $query->bindValue(':Organizer_id', $Organizer_id, PDO::PARAM_INT);
+            $query->execute();
+            echo "Organizer deleted successfully!";
+        } catch (Exception $e) {
+            echo "Error deleting organizer: " . $e->getMessage();
+        }
+    }
+
+    // Fetch a single organizer by ID
+    public function getorganizer($Organizer_id) {
+        $sql = "SELECT * FROM organizers WHERE Organizer_id = :Organizer_id";
+        $db = config::getConnexion();
+        $query = $db->prepare($sql);
+
+        try {
+            $query->execute(['Organizer_id' => $Organizer_id]);
+            return $query->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            echo "Error fetching organizer: " . $e->getMessage();
+        }
+    }
+
+    // Update an organizer
+   /* public function updatorganizer($organizer) {
+        $sql = "UPDATE organizers SET 
+                    Organizer_name = COALESCE(:Organizer_name, Organizer_name),
+                    Organizer_email = COALESCE(:Organizer_email, Organizer_email)
+                WHERE Organizer_id = :Organizer_id";
+    
+        $db = config::getConnexion();
+    
+        try {
+            $query = $db->prepare($sql);
+            $result = $query->execute([
+                'Organizer_name' => $organizer->getOrganizer_name(),
+                'Organizer_email' => $organizer->getOrganizer_email(),
+                'Organizer_id' => $organizer->getOrganizer_id()
+            ]);
+    
+            if ($result) {
+                return "Organizer updated successfully!";
+            } else {
+                return "No changes made to the organizer.";
+            }
+        } catch (Exception $e) {
+            error_log("Error updating organizer: " . $e->getMessage());
+            return "Error updating organizer.";
+        }
+    }*/
+    public function updateAndReplaceOrganizer($organizer) {
+        $db = config::getConnexion();
+    
+        try {
+            // 1. Delete the previous organizer from the database
+            $deleteSql = "DELETE FROM organizers WHERE Organizer_id = :Organizer_id";
+            $deleteQuery = $db->prepare($deleteSql);
+            $deleteQuery->execute(['Organizer_id' => $organizer->getOrganizer_id()]);
+    
+            // 2. Insert the new organizer
+            $insertSql = "INSERT INTO organizers (Organizer_id, Organizer_name, Organizer_email)
+                          VALUES (:Organizer_id, :Organizer_name, :Organizer_email)";
+            $insertQuery = $db->prepare($insertSql);
+            $insertQuery->execute([
+                'Organizer_id' => $organizer->getOrganizer_id(),
+                'Organizer_name' => $organizer->getOrganizer_name(),
+                'Organizer_email' => $organizer->getOrganizer_email()
+            ]);
+    
+            // If both queries were successful, redirect or return a success message
+            header('Location: organizer.php?success=1');
+            exit; // Ensure no code runs after the redirection
+    
+        } catch (Exception $e) {
+            // Handle errors (e.g., if any query fails)
+            echo "Error: " . $e->getMessage();
+        }
+    }
+    
+    
+    
+
+    // Fetch events by organizer ID
+    public function afficheEventsByOrganizer($Organizer_id) {
+        $sql = "SELECT * FROM organizers WHERE Organizer_id = :Organizer_id";
+        $db = config::getConnexion();
+        $query = $db->prepare($sql);
+
+        try {
+            
+            $query->execute(['Organizer_id' => $Organizer_id]);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error fetching events by organizer: " . $e->getMessage();
+        }
+    }
+
+    // Fetch all organizers
+    public function afficheOrganizers() {
+        $sql = "SELECT * FROM organizers";
+        $db = config::getConnexion();
+
+        try {
+            $query = $db->prepare($sql);
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error fetching organizers: " . $e->getMessage();
+        }
+    }
+}
 ?>

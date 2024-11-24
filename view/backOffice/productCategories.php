@@ -1,3 +1,38 @@
+<?php
+include_once '../../controller/productCategoryController.php'; // Adjust path
+include_once '../../model/productCategoryModel.php'; // Include the model
+include_once '../../config.php'; // Include your database connection
+
+// Initialize the controller
+$categoryController = new ProductCategoryController();
+
+// Check if the form was submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $categoryName = $_POST['category_name'] ?? '';
+
+    // Validate input
+    if (!empty($categoryName)) {
+        // Create a ProductCategory object
+        $newCategory = new ProductCategory(null, $categoryName);
+
+        // Call the addCategory function
+        $result = $categoryController->addCategory($newCategory);
+
+        if ($result) {
+            // Success: Redirect to the same page (current script) to clear POST data
+            header("Location: productCategories.php");
+            exit;
+        } else {
+            // Error: Display an error message
+            $errorMessage = "Failed to add category. Please try again.";
+        }
+    } else {
+        $errorMessage = "Please fill in the category name.";
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -740,11 +775,23 @@
               </ul>
             </div>
 
-          <div class="page-category">Inner page content goes here</div>
+          <div class="page-category"></div>
           
-        LEHNE ZID CRUD categories
-        
-        
+          <div class="container mt-5">
+                <h2 class="mb-4">Add New Category</h2>
+                <?php if (isset($errorMessage)): ?>
+                    <div class="alert alert-danger">
+                        <?= htmlspecialchars($errorMessage) ?>
+                    </div>
+                <?php endif; ?>
+                <form id="addCategoryForm" action="productCategories.php" method="POST">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="categoryName" name="category_name" placeholder="Enter category name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                </form>
+            </div>
         
         
         </div>

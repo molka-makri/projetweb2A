@@ -4,15 +4,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const addForm = document.getElementById("addForm");
     const editForm = document.getElementById("editForm");
+    console.log("editForm:", editForm);
 
-    
         addForm.addEventListener("submit", (event) => {
             // Prevent form submission
             event.preventDefault();
             
             let isValid = true; 
             let errorMessage = ""; 
-            // console.log(errorMessage)
             const productId = addForm.querySelector("#productId")?.value.trim();
             const productName = addForm.querySelector("#productName")?.value.trim();
             const productDescription = addForm.querySelector("#productDescription")?.value.trim();
@@ -24,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (!productDescription || productDescription.length < 10) {
-                errorMessage += "Product Description must be filled with at least 10 characters.\n";
+                errorMessage += "Product Description must be filled .\n";
                 isValid = false;
             }
 
@@ -44,38 +43,54 @@ document.addEventListener("DOMContentLoaded", () => {
 
         editForm.addEventListener("submit", (event) => {
             event.preventDefault(); // Prevent form submission for validation
-            console.log("aaaasba");
-            let valid = true;
     
-            // Get input values
-            const productId = editForm.querySelector("#productId")?.value.trim();
-            const productName = editForm.querySelector("#productName")?.value.trim();
-            const productDescription = editForm.querySelector("#productDescription")?.value.trim();
-            const productPrice = editForm.querySelector("#productPrice")?.value.trim();
-            const productCategory = editForm.querySelector("#productCategory")?.value.trim();
-            const productImage = editForm.querySelector("#productImage")?.value.trim();
+            let isValid = true;
+            let errorMessage = "";
     
-            // Validation messages
-            const errors = [];
+            // Fetch and trim input values
+            const productId = editForm.querySelector("#editProductId")?.value.trim();
+            const productName = editForm.querySelector("#editProductName")?.value.trim();
+            const productDescription = editForm.querySelector("#editProductDescription")?.value.trim();
+            const productPrice = editForm.querySelector("#editProductPrice")?.value.trim();
+            const productCategory = editForm.querySelector("#editProductCategory")?.value.trim();
+            const productImage = editForm.querySelector("#editProductImage")?.value.trim();
     
-            // Check if Product ID is filled
+            console.log("Inputs: ", { productId, productName, productDescription, productPrice, productCategory, productImage });
+    
+            // Validation for Product ID
             if (!productId) {
-                valid = false;
-                errors.push("Product ID must be filled.");
+                errorMessage += "Product ID is required for editing.\n";
+                isValid = false;
             }
     
-            // Check if at least one other field is modified (not empty)
-            if (!productName && !productDescription && !productPrice && !productCategory && !productImage) {
-                valid = false;
-                errors.push("At least one field must be modified.");
+            // Check if at least one field is filled for editing
+            const isAnyFieldFilled = productName || productDescription || productPrice || productCategory || productImage;
+            if (!isAnyFieldFilled) {
+                errorMessage += "At least one field must be updated.\n";
+                isValid = false;
+            }
+            if (!productName || productName.length < 3) {
+                errorMessage += "Product Name must be filled with at least 3 characters.\n";
+                isValid = false;
+            }
+            // Validate Product Price if provided
+            if (productPrice && (isNaN(productPrice) || Number(productPrice) <= 0)) {
+                errorMessage += "Product Price must be a valid positive number if provided.\n";
+                isValid = false;
             }
     
-            // Display errors or submit form
-            if (!valid) {
-                alert(errors);
+            // Validate Product Category if provided
+            if (productCategory && isNaN(productCategory)) {
+                errorMessage += "Product Category must be a valid number if provided.\n";
+                isValid = false;
+            }
+    
+            // If invalid, display error messages
+            if (!isValid) {
+                alert(errorMessage);
             } else {
-                // Submit the form if validation passes
-                editForm.submit();
+                console.log("Validation passed. Submitting the form...");
+                editForm.submit(); // Submit if validation passes
             }
         });
 

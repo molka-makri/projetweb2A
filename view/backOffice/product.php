@@ -213,7 +213,7 @@ if (isset($_POST['delete_product_id'])) {
                   </ul>
                 </div>
               </li>
-              <li class="nav-section">
+              <!-- <li class="nav-section">
                 <span class="sidebar-mini-icon">
                   <i class="fa fa-ellipsis-h"></i>
                 </span>
@@ -274,8 +274,8 @@ if (isset($_POST['delete_product_id'])) {
                     </li>
                   </ul>
                 </div>
-              </li>
-              <li class="nav-item">
+              </li> -->
+              <!-- <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarLayouts">
                   <i class="fas fa-th-list"></i>
                   <p>Sidebar Layouts</p>
@@ -353,8 +353,8 @@ if (isset($_POST['delete_product_id'])) {
                     </li>
                   </ul>
                 </div>
-              </li>
-              <li class="nav-item">
+              </li> -->
+              <!-- <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#charts">
                   <i class="far fa-chart-bar"></i>
                   <p>Charts</p>
@@ -388,13 +388,13 @@ if (isset($_POST['delete_product_id'])) {
                   <p>Documentation</p>
                   <span class="badge badge-secondary">1</span>
                 </a>
-              </li>
+              </li> -->
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#submenu">
+                <!-- <a data-bs-toggle="collapse" href="#submenu">
                   <i class="fas fa-bars"></i>
                   <p>Menu Levels</p>
                   <span class="caret"></span>
-                </a>
+                </a> -->
                 <div class="collapse" id="submenu">
                   <ul class="nav nav-collapse">
                     <li>
@@ -935,49 +935,53 @@ if (isset($_POST['delete_product_id'])) {
    
 
       <div class="container mt-5">
-          <h2>Edit Product</h2>
-          <form name="editForm" action="product.php" method="post">
-          <div class="mb-3">
-              <label for="productId" class="form-label">Product ID</label>
-              <input type="number" class="form-control" id="productId" name="product_id" placeholder="Enter Product ID" >
-          </div>
+              <h2>Edit Product</h2>
+        <form id="editForm" name="editForm" action="product.php" method="post">
+            <div class="mb-3">
+                <label for="editProductId" class="form-label">Product ID</label>
+                <input type="number" class="form-control" id="editProductId" name="product_id" placeholder="Enter Product ID">
+            </div>
 
-          <div class="mb-3">
-              <label for="productName" class="form-label">Product Name</label>
-              <input type="text" class="form-control" id="productName" name="product_name" placeholder="Enter Product Name" >
-          </div>
-          <div class="mb-3">
-              <label for="productDescription" class="form-label">Product Description</label>
-              <textarea class="form-control" id="productDescription" name="product_description" rows="3" placeholder="Enter Product Description"></textarea>
-          </div>
-          <div class="mb-3">
-              <label for="productPrice" class="form-label">Product Price</label>
-              <input type="number" class="form-control" id="productPrice" name="product_price" placeholder="Enter Product Price" >
-          </div>
-          <div class="mb-3">
-              <label for="productCategory" class="form-label">Product Category</label>
-              <select class="form-select" id="productCategory" name="product_category" >
-                  <option value="">Select Category</option>
-                  <?php
-                  include_once 'path_to_controller/productCategoryController.php'; // Adjust the path as needed
+            <div class="mb-3">
+                <label for="editProductName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="editProductName" name="product_name" placeholder="Enter Product Name">
+            </div>
 
-                  $categoryController = new productCategoryController();
-                  $categories = $categoryController->getCategories();
+            <div class="mb-3">
+                <label for="editProductDescription" class="form-label">Product Description</label>
+                <textarea class="form-control" id="editProductDescription" name="product_description" rows="3" placeholder="Enter Product Description"></textarea>
+            </div>
 
-                  foreach ($categories as $category) {
-                      echo "<option value='" . htmlspecialchars($category['category_id']) . "'>" . htmlspecialchars($category['category']) . "</option>";
-                  }
-                  ?>
-              </select>
-          </div>
+            <div class="mb-3">
+                <label for="editProductPrice" class="form-label">Product Price</label>
+                <input type="number" class="form-control" id="editProductPrice" name="product_price" placeholder="Enter Product Price">
+            </div>
 
-          <div class="mb-3">
-              <label for="productImage" class="form-label">Product Image URL</label>
-              <input type="url" class="form-control" id="productImage" name="product_img" placeholder="Enter Product Image URL">
-          </div>
+            <div class="mb-3">
+                <label for="editProductCategory" class="form-label">Product Category</label>
+                <select class="form-select" id="editProductCategory" name="product_category">
+                    <option value="">Select Category</option>
+                    <?php
+                    include_once 'path_to_controller/productCategoryController.php'; // Adjust the path as needed
 
-          <button type="submit" class="btn btn-primary">Update Product</button>
-      </form>
+                    $categoryController = new productCategoryController();
+                    $categories = $categoryController->getCategories();
+
+                    foreach ($categories as $category) {
+                        echo "<option value='" . htmlspecialchars($category['category_id']) . "'>" . htmlspecialchars($category['category']) . "</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+
+    <div class="mb-3">
+        <label for="editProductImage" class="form-label">Product Image URL</label>
+        <input type="url" class="form-control" id="editProductImage" name="product_img" placeholder="Enter Product Image URL">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Product</button>
+</form>
+
       </div>
     
 

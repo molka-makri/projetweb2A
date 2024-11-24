@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             let isValid = true; 
             let errorMessage = ""; 
-            console.log(errorMessage)
+            // console.log(errorMessage)
             const productId = addForm.querySelector("#productId")?.value.trim();
             const productName = addForm.querySelector("#productName")?.value.trim();
             const productDescription = addForm.querySelector("#productDescription")?.value.trim();
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
            
 
             if (!isValid) {
-                alert("errorMessage"); // Show errors in an alert
+                alert(errorMessage); // Show errors in an alert
             } else {
                 addForm.submit(); // Submit this specific form if validation passes
             }
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         editForm.addEventListener("submit", (event) => {
             event.preventDefault(); // Prevent form submission for validation
-    
+            console.log("aaaasba");
             let valid = true;
     
             // Get input values
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
             // Display errors or submit form
             if (!valid) {
-                alert("ERROR");
+                alert(errors);
             } else {
                 // Submit the form if validation passes
                 editForm.submit();

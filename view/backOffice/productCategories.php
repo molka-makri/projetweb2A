@@ -1,117 +1,3 @@
-
-
-
-
-
-<?php
-
-
-
-include '../../Controller/productController.php'; 
-include (__DIR__ . '/../../Controller/productCategoryController.php'); 
-
-$categoryController = new productCategoryController();
-$categories = $categoryController->getCategories();
-
-$productController = new productController();
-
-// Handling the form submission for product addition or updating
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  // Check if product_id is set to determine if we're adding or editing a product
-  if (isset($_POST['product_id']) && !empty($_POST['product_id'])) {
-      // This is the Edit Product form
-      if (
-          !empty($_POST['product_name']) || 
-          !empty($_POST['product_description']) || 
-          !empty($_POST['product_price']) || 
-          !empty($_POST['product_category']) || 
-          !empty($_POST['product_img'])
-      ) {
-
-        $productPrice = !empty($_POST['product_price']) && is_numeric($_POST['product_price']) 
-              ? (int)$_POST['product_price'] 
-              : null;
-
-          $productCategory = isset($_POST['product_category']) && is_numeric($_POST['product_category'])
-              ? (int)$_POST['product_category']
-              : null;
-
-          $updatedProduct = new Product(
-              $_POST['product_id'],              // Product ID (must be filled)
-              $_POST['product_name'] ?? null,    // Product Name (optional)
-              $_POST['product_description'] ?? null,  // Product Description (optional)
-              $productPrice,                     // Product Price (integer or null)
-              $productCategory,                  // Product Category (int or null)
-              $_POST['product_img'] ?? null      // Product Image URL (optional)
-          );
-
-          // Update the product in the database
-          $productController->updateProduct($updatedProduct);
-
-          // Redirect to the product list page after successful update
-          header('Location: product.php');
-          exit;
-      } 
-  } else {
-      // This is the Add Product form (no product_id set)
-      if (
-          !empty($_POST['product_name']) && 
-          !empty($_POST['product_description']) && 
-          !empty($_POST['product_price']) && 
-          !empty($_POST['product_category']) && 
-          !empty($_POST['product_img'])
-      ) {
-          // Ensure product category is numeric (cast to int)
-          $product_category = is_numeric($_POST['product_category']) ? (int)$_POST['product_category'] : 0;
-
-          // Create a new Product object
-          $product = new Product(
-              null, // Product_id is auto-generated
-              $_POST['product_name'], 
-              $_POST['product_description'], 
-              $_POST['product_price'],
-              $product_category,  // Now properly casted to integer
-              $_POST['product_img']
-          );
-
-          // Add the product to the database
-          $productController->addProduct($product);
-
-          // Redirect to the product list page after successful addition
-          header('Location: product.php');
-          exit;
-      } 
-  }
-}
-
-
-
-
-// Check if a delete request is made
-if (isset($_POST['delete_product_id'])) {
-    // Ensure the ID is provided and is numeric
-    $deleteProductId = (int)$_POST['delete_product_id'];
-
-    if ($deleteProductId > 0) {
-        // Create an instance of the controller and delete the product
-        $productController = new productController();
-        $productController->deleteProduct($deleteProductId);
-
-        // Redirect to the product list page after deletion
-        header('Location: product.php');
-        exit;
-    } else {
-        echo "Invalid product ID.";
-    }
-}
-
-?>
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -186,7 +72,7 @@ if (isset($_POST['delete_product_id'])) {
         </div>
         <div class="sidebar-wrapper scrollbar scrollbar-inner">
           <div class="sidebar-content">
-          <ul class="nav nav-secondary">
+            <ul class="nav nav-secondary">
               <li class="nav-item active">
                 <a
                   data-bs-toggle="collapse"
@@ -195,25 +81,25 @@ if (isset($_POST['delete_product_id'])) {
                   aria-expanded="false"
                 >
                   <i class="fas fa-home"></i>
-                  <p>options</p>
+                  <p>Options</p>
                   <span class="caret"></span>
                 </a>
                 <div class="collapse" id="dashboard">
                   <ul class="nav nav-collapse">
-                     <li>
+                    <li>
                       <a href="index.html">
                         <span class="sub-item">Main Menu</span>
                       </a>
-                    </li> 
+                    </li>
                     <li>
-                      <a href="productCategories.php">
-                        <span class="sub-item">Manage Product categories</span>
+                      <a href="product.php">
+                        <span class="sub-item">Manage Products</span>
                       </a>
-                    </li> 
+                    </li>
                   </ul>
                 </div>
               </li>
-              <li class="nav-section">
+              <!-- <li class="nav-section">
                 <span class="sidebar-mini-icon">
                   <i class="fa fa-ellipsis-h"></i>
                 </span>
@@ -274,8 +160,8 @@ if (isset($_POST['delete_product_id'])) {
                     </li>
                   </ul>
                 </div>
-              </li>
-              <li class="nav-item">
+              </li> -->
+              <!-- <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarLayouts">
                   <i class="fas fa-th-list"></i>
                   <p>Sidebar Layouts</p>
@@ -295,8 +181,8 @@ if (isset($_POST['delete_product_id'])) {
                     </li>
                   </ul>
                 </div>
-              </li>
-              <li class="nav-item">
+              </li> -->
+              <!-- <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#forms">
                   <i class="fas fa-pen-square"></i>
                   <p>Forms</p>
@@ -311,8 +197,8 @@ if (isset($_POST['delete_product_id'])) {
                     </li>
                   </ul>
                 </div>
-              </li>
-              <li class="nav-item">
+              </li> -->
+              <!-- <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#tables">
                   <i class="fas fa-table"></i>
                   <p>Tables</p>
@@ -332,8 +218,8 @@ if (isset($_POST['delete_product_id'])) {
                     </li>
                   </ul>
                 </div>
-              </li>
-              <li class="nav-item">
+              </li> -->
+              <!-- <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#maps">
                   <i class="fas fa-map-marker-alt"></i>
                   <p>Maps</p>
@@ -353,8 +239,8 @@ if (isset($_POST['delete_product_id'])) {
                     </li>
                   </ul>
                 </div>
-              </li>
-              <li class="nav-item">
+              </li> -->
+              <!-- <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#charts">
                   <i class="far fa-chart-bar"></i>
                   <p>Charts</p>
@@ -374,27 +260,27 @@ if (isset($_POST['delete_product_id'])) {
                     </li>
                   </ul>
                 </div>
-              </li>
-              <li class="nav-item">
+              </li> -->
+              <!-- <li class="nav-item">
                 <a href="widgets.html">
                   <i class="fas fa-desktop"></i>
                   <p>Widgets</p>
                   <span class="badge badge-success">4</span>
                 </a>
-              </li>
-              <li class="nav-item">
+              </li> -->
+              <!-- <li class="nav-item">
                 <a href="../../documentation/index.html">
                   <i class="fas fa-file"></i>
                   <p>Documentation</p>
                   <span class="badge badge-secondary">1</span>
                 </a>
-              </li>
+              </li> -->
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#submenu">
+                <!-- <a data-bs-toggle="collapse" href="#submenu">
                   <i class="fas fa-bars"></i>
                   <p>Menu Levels</p>
                   <span class="caret"></span>
-                </a>
+                </a> -->
                 <div class="collapse" id="submenu">
                   <ul class="nav nav-collapse">
                     <li>
@@ -440,7 +326,7 @@ if (isset($_POST['delete_product_id'])) {
                   </ul>
                 </div>
               </li>
-            </ul> -->
+            </ul>
           </div>
         </div>
       </div>
@@ -785,7 +671,7 @@ if (isset($_POST['delete_product_id'])) {
                     </div>
                     <span class="profile-username">
                       <span class="op-7">Hi,</span>
-                      <span class="fw-bold">admin</span>
+                      <span class="fw-bold">Hizrian</span>
                     </span>
                   </a>
                   <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -832,7 +718,7 @@ if (isset($_POST['delete_product_id'])) {
         <div class="container">
           <div class="page-inner">
             <div class="page-header">
-              <h4 class="page-title">Manage Products</h4>
+              <h4 class="page-title">Manage Product Categories</h4>
               <ul class="breadcrumbs">
                 <li class="nav-home">
                   <a href="#">
@@ -854,148 +740,12 @@ if (isset($_POST['delete_product_id'])) {
               </ul>
             </div>
 
-          <div class="page-category"></div>
+          <div class="page-category">Inner page content goes here</div>
           
+        LEHNE ZID CRUD categories
         
-        <div class="container mt-5">
-    <h2 class="mb-4">Add Product</h2>
-    <form id="addForm" action="product.php" method="post">
-    <div class="mb-3">
-        <label for="productName" class="form-label">Product Name</label>
-        <input type="text" class="form-control" id="productName" name="product_name">
-    </div>
-    <div class="mb-3">
-        <label for="productDescription" class="form-label">Product Description</label>
-        <textarea class="form-control" id="productDescription" name="product_description" rows="3" ></textarea>
-    </div>
-    <div class="mb-3">
-        <label for="productPrice" class="form-label">Product Price</label>
-        <input type="number" class="form-control" id="productPrice" name="product_price" >
-    </div>
-    <div class="mb-3">
-        <label for="productCategory" class="form-label">Product Category</label>
-        <select class="form-control" id="productCategory" name="product_category" >
-            <option value="">Select a category</option>
-            <?php foreach ($categories as $category): ?>
-                <option value="<?= htmlspecialchars($category['category_id']) ?>">
-                    <?= htmlspecialchars($category['category']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label for="productImage" class="form-label">Product Image URL</label>
-        <input type="url" class="form-control" id="productImage" name="product_img" >
-    </div>
-    <button type="submit" class="btn btn-primary">Add Product</button>
-</form>
-</div>
         
-<div class="container mt-5">
-        <!-- <h2 class="mb-4">Product List</h2> -->
-        <!-- The PHP script will display the product list here -->
         
- <?php
-
-    // Create an instance of productController
-    $productController = new productController();
-
-    // Get all products from the database
-    $products = $productController->getProducts();
-
-    // Check if there are products
-    if ($products && $products->rowCount() > 0) {
-        echo "<div class='container mt-5'>";
-        echo "<h2 class='mb-4'>Product List</h2>";
-        echo "<div class='row'>"; // Bootstrap grid starts here
-
-        // Loop through the products and display them as cards
-        while ($product = $products->fetch(PDO::FETCH_ASSOC)) {
-            echo "<div class='col-md-4 mb-4'>";
-            echo "<div class='card'>";
-            echo "<img src='" . htmlspecialchars($product['Product_img']) . "' class='card-img-top' alt='Product Image' style='height: 200px; object-fit: cover;'>";
-            echo "<div class='card-body'>";
-            echo "<h5 class='card-title'>" . htmlspecialchars($product['Product_name']) . "</h5>";
-            echo "<p class='card-text'>" . htmlspecialchars($product['Product_description']) . "</p>";
-            echo "<p class='card-text'><strong>Price: $" . htmlspecialchars($product['Product_price']) . "</strong></p>";
-            echo "<p class='card-text'><small class='text-muted'>Category: " . htmlspecialchars($product['Product_categorie']) . "</small></p>";
-            echo "</div>";
-            echo "</div>";
-            echo "</div>";
-        }
-
-        echo "</div>"; // Bootstrap grid ends here
-        echo "</div>";
-    } else {
-        echo "<p>No products found.</p>";
-    }
-?>
-    
-    
-   
-
-      <div class="container mt-5">
-          <h2>Edit Product</h2>
-          <form name="editForm" action="product.php" method="post">
-          <div class="mb-3">
-              <label for="productId" class="form-label">Product ID</label>
-              <input type="number" class="form-control" id="productId" name="product_id" placeholder="Enter Product ID" >
-          </div>
-
-          <div class="mb-3">
-              <label for="productName" class="form-label">Product Name</label>
-              <input type="text" class="form-control" id="productName" name="product_name" placeholder="Enter Product Name" >
-          </div>
-          <div class="mb-3">
-              <label for="productDescription" class="form-label">Product Description</label>
-              <textarea class="form-control" id="productDescription" name="product_description" rows="3" placeholder="Enter Product Description"></textarea>
-          </div>
-          <div class="mb-3">
-              <label for="productPrice" class="form-label">Product Price</label>
-              <input type="number" class="form-control" id="productPrice" name="product_price" placeholder="Enter Product Price" >
-          </div>
-          <div class="mb-3">
-              <label for="productCategory" class="form-label">Product Category</label>
-              <select class="form-select" id="productCategory" name="product_category" >
-                  <option value="">Select Category</option>
-                  <?php
-                  include_once 'path_to_controller/productCategoryController.php'; // Adjust the path as needed
-
-                  $categoryController = new productCategoryController();
-                  $categories = $categoryController->getCategories();
-
-                  foreach ($categories as $category) {
-                      echo "<option value='" . htmlspecialchars($category['category_id']) . "'>" . htmlspecialchars($category['category']) . "</option>";
-                  }
-                  ?>
-              </select>
-          </div>
-
-          <div class="mb-3">
-              <label for="productImage" class="form-label">Product Image URL</label>
-              <input type="url" class="form-control" id="productImage" name="product_img" placeholder="Enter Product Image URL">
-          </div>
-
-          <button type="submit" class="btn btn-primary">Update Product</button>
-      </form>
-      </div>
-    
-
-<!-- HTML form to delete a product -->
-<div class="container mt-5">
-    <h2>Delete Product</h2>
-    <form action="product.php" method="post">
-        <div class="mb-3">
-            <label for="deleteProductId" class="form-label">Product ID</label>
-            <input type="number" class="form-control" id="deleteProductId" name="delete_product_id" placeholder="Enter Product ID" required>
-        </div>
-        
-        <button type="submit" class="btn btn-danger">Delete Product</button>
-    </form>
-</div>    
-    
-    
-      </div>
         
         </div>
         </div>
@@ -1064,10 +814,5 @@ if (isset($_POST['delete_product_id'])) {
 
     <!-- Kaiadmin JS -->
     <script src="assets/js/kaiadmin.min.js"></script>
-
-
-    
-    <script src="product.js" defer ></script>
-
   </body>
 </html>

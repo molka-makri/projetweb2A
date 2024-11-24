@@ -2,41 +2,45 @@
 include '../../../Controller/eventController.php'; 
 
 // Add an event
-if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'], $_POST['event_organizer'])) {
-    if (!empty($_POST['event_name']) && !empty($_POST['event_description']) && !empty($_POST['event_date']) && !empty($_POST['event_location']) && !empty($_POST['event_organizer'])) {
+if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'], $_POST['Event_organizer'])) {
+    if (!empty($_POST['event_name']) && !empty($_POST['event_description']) && !empty($_POST['event_date']) && !empty($_POST['event_location']) && !empty($_POST['Event_organizer'])) {
         try {
-            // Convert event_date to DateTime if required
-            $eventDate = new DateTime($_POST['event_date']);
-           
+            // Validate and sanitize inputs
+            $eventName = htmlspecialchars($_POST['event_name']);
+            $eventDescription = htmlspecialchars($_POST['event_description']);
+            $eventDate = new DateTime($_POST['event_date']); // Convert to DateTime
+            $eventLocation = htmlspecialchars($_POST['event_location']);
+            $eventOrganizer = (int)$_POST['Event_organizer']; // Ensure integer
+
             // Create the event object
             $event = new Event(
-                null, // Event ID will be null for adding a new event
-                $_POST['event_name'],
-                $_POST['event_description'],
-                $eventDate, // DateTime object
-                $_POST['event_location'],
-                null
+                null, // New event, so ID is null
+                $eventName,
+                $eventDescription,
+                $eventDate, // Format DateTime to string
+                $eventLocation,
+                $eventOrganizer // Assign the organizer ID
             );
 
             // Call the controller to add the event
-            $eventsController = new eventsController();
-            $eventsController->addEvent($event);
+            $eventController = new eventsController();
+            $eventController->addEvent($event);
 
             // Redirect to event page with success
             header('Location: event.php?success=1');
-            exit; // Make sure to call exit after header redirection
-            
+            exit;
+
         } catch (Exception $e) {
             echo "Error while adding event: " . $e->getMessage();
         }
     } else {
-        echo "Please fill in all fields.";
+        echo "Please fill in all fields correctly.";
     }
 }
 
 // Update an event
-if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'], $_POST['event_id'], $_POST['event_organizer'])) {
-    if (!empty($_POST['event_name']) || !empty($_POST['event_description']) || !empty($_POST['event_date']) || !empty($_POST['event_location']) || !empty($_POST['event_organizer'])) {
+if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'], $_POST['event_id'], $_POST['Event_organizer'])) {
+    if (!empty($_POST['event_name']) || !empty($_POST['event_description']) || !empty($_POST['event_date']) || !empty($_POST['event_location']) || !empty($_POST['Event_organizer'])) {
 
         // Ensure event_date is properly initialized as DateTime or null
         $eventDate = !empty($_POST['event_date']) ? new DateTime($_POST['event_date']) : null;
@@ -51,13 +55,13 @@ if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'
             $_POST['Event_organizer']
         );
 
-        // Call the controller to update the event
-        $eventsController = new eventsController();
-        $eventsController->updateEvent($updatedEvent);
+        
+        $eventController = new eventsController();
+        $eventController->updateEvent($updatedEvent);
 
         // Redirect to event page with success
         header('Location: event.php?success=1');
-        exit; // Make sure to call exit after header redirection
+        exit; 
     } else {
         echo "Please fill in at least one field to update.";
     }
@@ -82,6 +86,9 @@ if (isset($_POST['delete_event_id'])) {
         echo "Invalid event ID.";
     }
 }
+
+// Fetch events for the frontend
+
 ?>
 
 <!DOCTYPE html>
@@ -99,34 +106,78 @@ if (isset($_POST['delete_event_id'])) {
     <form id="addEventForm" action="event.php" method="post">
         <div class="mb-3">
             <label for="eventName" class="form-label">Event Name</label>
-            <input type="text" class="form-control" id="eventName" name="event_name" required>
+            <input type="text" class="form-control" id="eventName" name="event_name" >
         </div>
         <div class="mb-3">
             <label for="eventDescription" class="form-label">Event Description</label>
-            <textarea class="form-control" id="eventDescription" name="event_description" rows="3" required></textarea>
+            <textarea class="form-control" id="eventDescription" name="event_description" rows="3" ></textarea>
         </div>
         <div class="mb-3">
             <label for="eventDate" class="form-label">Event Date</label>
-            <input type="date" class="form-control" id="eventDate" name="event_date" required>
+            <input type="date" class="form-control" id="eventDate" name="event_date">
         </div>
         <div class="mb-3">
             <label for="eventLocation" class="form-label">Event Location</label>
-            <input type="text" class="form-control" id="eventLocation" name="event_location" required>
+            <input type="text" class="form-control" id="eventLocation" name="event_location" >
         </div>
         <div class="mb-3">
-            <label for="eventOrganizer" class="form-label">Event Organizer</label>
-            <input type="number" class="form-control" id="eventOrganizer" name="Event_organizer" required>
-        </div>
+    <label for="eventOrganizer" class="form-label">Event Organizer</label>
+    <select class="form-select" id="eventOrganizer" name="Event_organizer" >
+        <option value="" disabled selected>Select an Organizer</option>
+        <?php
+        // Fetch organizers from the database
+        $organizersController = new organizersController();
+        $organizers = $organizersController->getOrganizers();
+
+        if ($organizers && $organizers->rowCount() > 0) {
+            while ($organizer = $organizers->fetch(PDO::FETCH_ASSOC)) {
+                echo "<option value='" . htmlspecialchars($organizer['Organizer_id']) . "'>" . htmlspecialchars($organizer['Organizer_name']) . "</option>";
+            }
+        } else {
+            echo "<option value='' disabled>No organizers available</option>";
+        }
+        ?>
+    </select>
+</div>
         <button type="submit" class="btn btn-primary">Add Event</button>
     </form>
 </div>
 
 <div class="container mt-5">
     <h2>Event List</h2>
+
+    <!-- Organizer Filter Dropdown -->
+    <form id="filterForm" action="" method="get">
+        <div class="mb-3">
+            <label for="organizerFilter" class="form-label">Filter by Organizer</label>
+            <select id="organizerFilter" name="organizer_id" class="form-select" onchange="document.getElementById('filterForm').submit();">
+                <option value="">Show All Events</option>
+                <?php
+                // Fetch all organizers
+                $organizersController = new organizersController();
+                $organizers = $organizersController->afficheOrganizers();
+
+                foreach ($organizers as $organizer) {
+                    $selected = isset($_GET['organizer_id']) && $_GET['organizer_id'] == $organizer['Organizer_id'] ? 'selected' : '';
+                    echo "<option value='" . htmlspecialchars($organizer['Organizer_id']) . "' $selected>" . htmlspecialchars($organizer['Organizer_name']) . "</option>";
+                }
+                ?>
+            </select>
+        </div>
+    </form>
+
     <?php
     $eventsController = new eventsController();
-    $events = $eventsController->getEvents();
 
+    // Check if an organizer filter is applied
+    if (isset($_GET['organizer_id']) && !empty($_GET['organizer_id'])) {
+        $organizerId = (int)$_GET['organizer_id'];
+        $events = $eventsController->getEventsByOrganizer($organizerId); // Fetch events for selected organizer
+    } else {
+        $events = $eventsController->getEvents(); // Fetch all events
+    }
+
+    // Display events
     if ($events && $events->rowCount() > 0) {
         echo "<div class='row'>";
 
@@ -138,7 +189,6 @@ if (isset($_POST['delete_event_id'])) {
             echo "<p class='card-text'>" . htmlspecialchars($event['Event_description']) . "</p>";
             echo "<p class='card-text'><strong>Date: " . htmlspecialchars($event['Event_date']) . "</strong></p>";
             echo "<p class='card-text'><small class='text-muted'>Place: " . htmlspecialchars($event['Event_location']) . "</small></p>";
-            //echo "<p class='card-text'><small class='text-muted'>Organizer: " . htmlspecialchars($event['Event_organizer.Organizer_name']) . "</small></p>";
             echo "<p class='card-text'><small class='text-muted'>ID: " . htmlspecialchars($event['Event_id']) . "</small></p>";
             echo "</div>";
             echo "</div>";
@@ -152,13 +202,14 @@ if (isset($_POST['delete_event_id'])) {
     ?>
 </div>
 
+
 <!-- Edit Event Form -->
 <div class="container mt-5">
     <h2>Edit Event</h2>
     <form action="event.php" method="post">
         <div class="mb-3">
             <label for="eventId" class="form-label">Event ID</label>
-            <input type="number" class="form-control" id="eventId" name="event_id" placeholder="Enter Event ID" required>
+            <input type="number" class="form-control" id="eventId" name="event_id" placeholder="Enter Event ID" >
         </div>
         <div class="mb-3">
             <label for="eventName" class="form-label">Event Name</label>

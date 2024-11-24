@@ -112,6 +112,75 @@ class Organizer {
     }
 
 }
-   
+
+class Participant {
+    
+    public $Event_id; // Updated to match your database column name
+    public $username;
+    public $email;
+    public $conn;  // Database connection
+
+    // Constructor to initialize the participant object and database connection
+    public function __construct($Event_id, $username, $email, $conn) {
+        $this->Event_id = $Event_id; // Use Event_id here
+        $this->username = $username;
+        $this->email = $email;
+        $this->conn = $conn;  // Initialize the connection
+    }
+
+    // Getters and Setters
+    public function getUsername() {
+        return $this->username;
+    }
+
+    public function setUsername($username) {
+        $this->username = $username;
+    }
+
+    public function getEmail() {
+        return $this->email;
+    }
+
+    public function setEmail($email) {
+        $this->email = $email;
+    }
+
+    public function getEventId() {
+        return $this->Event_id; // Return Event_id
+    }
+
+    public function setEventId($Event_id) {
+        $this->Event_id = $Event_id; // Set Event_id
+    }
+
+    // Method to save participant into the database
+    public function save() {
+        // Prepare SQL query to insert data into event_participations table
+        $sql = "INSERT INTO event_participations (username, email, event_id) 
+                VALUES (:username, :email, :event_id)";
+        
+        try {
+            // Prepare the statement
+            $stmt = $this->conn->prepare($sql);
+            
+            // Bind the parameters to the query
+            $stmt->bindParam(':username', $this->username);
+            $stmt->bindParam(':email', $this->email);
+            $stmt->bindParam(':event_id', $this->Event_id); // Bind the Event_id
+
+            // Execute the query and return success/failure status
+            if ($stmt->execute()) {
+                return true; // Successfully saved participant data
+            } else {
+                return false; // Query failed
+            }
+        } catch (PDOException $e) {
+            // Catch any errors during the execution and print the error message
+            echo "Error saving participant: " . $e->getMessage();
+            return false;
+        }
+    }
+}
 
 ?>
+

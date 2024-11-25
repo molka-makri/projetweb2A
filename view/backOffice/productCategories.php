@@ -5,31 +5,46 @@ include_once '../../config.php'; // Include your database connection
 
 // Initialize the controller
 $categoryController = new ProductCategoryController();
+$categories = $categoryController->getCategories();
+
 
 // Check if the form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoryName = $_POST['category_name'] ?? '';
-
-    // Validate input
     if (!empty($categoryName)) {
-        // Create a ProductCategory object
         $newCategory = new ProductCategory(null, $categoryName);
-
-        // Call the addCategory function
         $result = $categoryController->addCategory($newCategory);
-
         if ($result) {
-            // Success: Redirect to the same page (current script) to clear POST data
             header("Location: productCategories.php");
             exit;
         } else {
-            // Error: Display an error message
             $errorMessage = "Failed to add category. Please try again.";
         }
     } else {
         $errorMessage = "Please fill in the category name.";
     }
 }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_category'])) {
+          $categoryId = $_POST['category_id'];
+          $categoryController->deleteCategory($categoryId);
+          header("Location: " . $_SERVER['PHP_SELF']); // Reload the current page
+          exit;
+        }
+
+        // Handle modification
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modify_category'])) {
+          $categoryId = $_POST['category_id'];
+          $newCategoryName = $_POST['category_name'];
+          $categoryController->modifyCategory($categoryId, $newCategoryName);
+          header("Location: " . $_SERVER['PHP_SELF']); // Reload the current page
+          exit;
+        }
+
+
+
+
+
 ?>
 
 
@@ -793,6 +808,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
         
+            <div class="container my-5">
+    <h2 class="text-center mb-4">Manage Product Categories</h2>
+
+    <?php if (!empty($categories)): ?>
+        <ul class="list-group">
+            <?php foreach ($categories as $category): ?>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <form method="POST" class="d-inline-flex w-100">
+                        <div class="flex-grow-1">
+                            <span><?= htmlspecialchars($category['category']); ?></span>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-sm btn-warning me-2" data-bs-toggle="modal" data-bs-target="#editModal<?= $category['category_id']; ?>">Modify</button>
+                            <input type="hidden" name="category_id" value="<?= $category['category_id']; ?>">
+                            <button type="submit" name="delete_category" class="btn btn-sm btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </li>
+
+                <!-- Modal for Modify -->
+                <div class="modal fade" id="editModal<?= $category['category_id']; ?>" tabindex="-1" aria-labelledby="editModalLabel<?= $category['category_id']; ?>" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel<?= $category['category_id']; ?>">Modify Category</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST">
+                                <div class="modal-body">
+                                    <input type="hidden" name="category_id" value="<?= $category['category_id']; ?>">
+                                    <div class="mb-3">
+                                        <label for="category_name_<?= $category['category_id']; ?>" class="form-label">Category Name</label>
+                                        <input type="text" class="form-control" id="category_name_<?= $category['category_id']; ?>" name="category_name" value="<?= htmlspecialchars($category['category']); ?>" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" name="modify_category" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <div class="alert alert-warning text-center" role="alert">
+            No categories found.
+        </div>
+    <?php endif; ?>
+</div>
         
         </div>
         </div>

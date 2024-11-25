@@ -42,12 +42,51 @@ include(__DIR__ . '/../Model/productCategoryModel.php');
           }
       }
       
+      public function modifyCategory($categoryId, $newCategoryName) {
+        try {
+            // Get the database connection
+            $db = config::getConnexion();
+    
+            // Prepare the update query
+            $query = $db->prepare("
+                UPDATE products_categories 
+                SET category = :category 
+                WHERE category_id = :category_id
+            ");
+    
+            // Bind parameters to ensure proper values are used
+            $query->bindParam(':category', $newCategoryName, PDO::PARAM_STR);
+            $query->bindParam(':category_id', $categoryId, PDO::PARAM_INT);
+    
+            // Execute the query
+            $query->execute();
+    
+            // Return success if rows were affected
+            return $query->rowCount() > 0;
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+
+
+        public function deleteCategory($categoryId) {
+          try {
+              $db = config::getConnexion();
+              $query = $db->prepare("DELETE FROM products_categories WHERE category_id = :category_id");
+              $query->bindParam(':category_id', $categoryId, PDO::PARAM_INT);
+              $query->execute();
+          } catch (PDOException $e) {
+              echo $e->getMessage();
+          }
+      }
+  
 
 
 
     }
 
 
-
+  
 
 ?>

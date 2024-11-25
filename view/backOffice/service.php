@@ -215,6 +215,14 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="Proposerunservice.php">
+            <div class="icon">
+              <span class="material-icons">post_add</span>
+            </div>
+            <span>ProposerService</span>
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="deleteservice.php">
             <div class="icon">
               <span class="material-icons">delete</span>
@@ -637,7 +645,7 @@
               </ul>
             </div>
 
-          <div class="page-category">Inner page content goes here</div>
+          <div class="page-category">selectionnez l'un des services a gauche</div>
           
         
         

@@ -215,12 +215,21 @@ $services = $controller->listService();
             <span>Afficher les services</span>
           </a>
         </li>
+        
         <li class="nav-item">
           <a class="nav-link" href="addservice.php">
             <div class="icon">
               <span class="material-icons">add</span>
             </div>
             <span>Ajouter</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="Proposerunservice.php">
+            <div class="icon">
+              <span class="material-icons">post_add</span>
+            </div>
+            <span>ProposerService</span>
           </a>
         </li>
         <li class="nav-item">
@@ -655,7 +664,7 @@ $services = $controller->listService();
             <th>Nom</th>
             <th>Contact</th>
             <th>Photo</th>
-            <th>Actions</th>
+            
         </tr>
         <?php foreach ($services as $service) { ?>
         <tr>
@@ -669,8 +678,7 @@ $services = $controller->listService();
                 <?php endif; ?>
             </td>
             <td>
-                <a href="updateservice.php?id=<?= htmlspecialchars($service['service_id']) ?>">Modifier</a> |
-                <a href="deleteservice.php?id=<?= htmlspecialchars($service['service_id']) ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce service ?');">Supprimer</a>
+               
             </td>
         </tr>
         <?php } ?>

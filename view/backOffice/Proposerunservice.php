@@ -1,34 +1,42 @@
 <?php
-include '../../Controller/serviceController.php';
+include(__DIR__ . '/../../controller/servicetypecontroller.php');
 
-$controller = new ServiceController();
-$services = $controller->listService();
+// Ajouter un type de service proposé
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proposer_service'])) {
+    $typeName = $_POST['type_name'] ?? '';
+
+    // Vérification de la longueur du nom du service (maximum 10 caractères)
+    if (strlen($typeName) > 10) {
+        echo "Le nom du service ne peut pas dépasser 10 caractères.";
+    } else {
+        try {
+            $serviceTypeController = new servicetypecontroller();
+            $serviceTypeController->addServiceType($typeName);
+            echo "Type de service ajouté avec succès !";
+        } catch (Exception $e) {
+            echo "Erreur : " . $e->getMessage();
+        }
+    }
+}
+
+// Supprimer un type de service proposé
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_service'])) {
+    $serviceId = $_POST['service_id'] ?? '';
+
+    try {
+        $serviceTypeController = new servicetypecontroller();
+        $serviceTypeController->deleteServiceType($serviceId);
+        echo "Type de service supprimé avec succès !";
+    } catch (Exception $e) {
+        echo "Erreur : " . $e->getMessage();
+    }
+}
 ?>
 
 
-
-<?php
-// include '../../Controller/serviceController.php';
-//     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-//         // Validate and sanitize inputs
-//         $service_type_id = filter_input(INPUT_POST, 'service_type_id', FILTER_VALIDATE_INT);
-//         $nom = filter_input(INPUT_POST, 'nom', FILTER_SANITIZE_STRING);
-//         $contact = filter_input(INPUT_POST, 'contact', FILTER_SANITIZE_STRING);
-//         $photo = filter_input(INPUT_POST, 'photo', FILTER_SANITIZE_URL);
-
-//         if ($service_type_id && $nom && $contact) {
-//             // Create a new Service instance
-//             $service = new Service(null, $service_type_id, $nom, $contact, $photo);
-
-//             // Add the service to the database
-//             $manager = new ServiceController();
-//             $manager->addService($service);
-//         } else {
-//             echo "Veuillez remplir tous les champs requis.";
-//         }
-//     }
-    ?> 
     
+</body>
+</html>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -215,7 +223,6 @@ $services = $controller->listService();
             <span>Afficher les services</span>
           </a>
         </li>
-        
         <li class="nav-item">
           <a class="nav-link" href="addservice.php">
             <div class="icon">
@@ -240,7 +247,7 @@ $services = $controller->listService();
             <span>Supprimer</span>
           </a>
         </li>
-       
+        </li>
       </ul>
           </div>
         </div>
@@ -655,37 +662,47 @@ $services = $controller->listService();
               </ul>
             </div>
 
-          <div class="page-category"></div>
-          <h1>Liste des Services</h1>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Type</th>
-            <th>Nom</th>
-            <th>Contact</th>
-            <th>Photo</th>
             
-        </tr>
-        <?php foreach ($services as $service) { ?>
-        <tr>
-            <td><?= htmlspecialchars($service['service_id']) ?></td>
-            <td><?= htmlspecialchars($service['type_name']) ?></td>
-            <td><?= htmlspecialchars($service['nom']) ?></td>
-            <td><?= htmlspecialchars($service['contact']) ?></td>
-            <td>
-                <?php if ($service['photo']): ?>
-                    <img src="<?= htmlspecialchars($service['photo']) ?>" alt="Photo" width="50">
-                <?php endif; ?>
-            </td>
-            <td>
-                <a href="updateservice.php?id=<?= htmlspecialchars($service['service_id']) ?>">Modifier</a> |
-                <a href="deleteservice.php?id=<?= htmlspecialchars($service['service_id']) ?>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce service ?');">Supprimer</a>
-            </td>
-        </tr>
-        <?php } ?>
-    </table>
-    
-</body>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposer un Type de Service</title>
+</head>
+<body>
+<h1>Proposer un Type de Service</h1>
+
+<!-- Formulaire pour proposer un type de service -->
+<form action="" method="POST">
+    <label for="type_name">Nom du Type de Service :</label>
+    <input type="text" name="type_name" maxlength="10" required>
+    <input type="submit" name="proposer_service" value="Proposer">
+</form>
+
+<h2>Types de services proposés</h2>
+<!-- Liste des types de services déjà proposés avec possibilité de suppression -->
+<table>
+    <tr>
+        
+        
+    </tr>
+    <?php
+    // Afficher la liste des types de services proposés
+    $serviceTypeController = new servicetypecontroller();
+    $types = $serviceTypeController->listServiceTypes();
+
+    while ($row = $types->fetch()) {
+        echo "<tr>";
+        echo "<td>" . htmlspecialchars($row['type_name']) . "</td>";
+        echo "<td>
+                <form action='' method='POST' style='display:inline-block;'>
+                    <input type='hidden' name='service_id' value='" . $row['service_type_id'] . "'>
+                    <input type='submit' name='delete_service' value='Supprimer'>
+                </form>
+              </td>";
+        echo "</tr>";
+    }
+    ?>
+</table>
+
         
         
         </div>
@@ -757,3 +774,5 @@ $services = $controller->listService();
     <script src="assets/js/kaiadmin.min.js"></script>
   </body>
 </html>
+
+

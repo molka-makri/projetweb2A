@@ -236,6 +236,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="Proposerunservice.php">
+            <div class="icon">
+              <span class="material-icons">post_add</span>
+            </div>
+            <span>ProposerService</span>
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="deleteservice.php">
             <div class="icon">
               <span class="material-icons">delete</span>
@@ -243,13 +251,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <span>Supprimer</span>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="updateservice.php">
-            <div class="icon">
-              <span class="material-icons">update</span>
-            </div>
-            <span>Mettre à jour</span>
-          </a>
         </li>
       </ul>
           </div>

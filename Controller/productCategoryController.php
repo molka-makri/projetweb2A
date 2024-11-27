@@ -43,30 +43,31 @@ include(__DIR__ . '/../Model/productCategoryModel.php');
       }
       
       public function modifyCategory($categoryId, $newCategoryName) {
-        try {
-            // Get the database connection
-            $db = config::getConnexion();
-    
-            // Prepare the update query
-            $query = $db->prepare("
-                UPDATE products_categories 
-                SET category = :category 
-                WHERE category_id = :category_id
-            ");
-    
-            // Bind parameters to ensure proper values are used
-            $query->bindParam(':category', $newCategoryName, PDO::PARAM_STR);
-            $query->bindParam(':category_id', $categoryId, PDO::PARAM_INT);
-    
-            // Execute the query
-            $query->execute();
-    
-            // Return success if rows were affected
-            return $query->rowCount() > 0;
-        } catch (PDOException $e) {
-            echo $e->getMessage();
-            return false;
-        }
+       // Get current category data from the database
+      $sql = "SELECT * FROM products_categories WHERE category_id = :categoryId";
+      $db = config::getConnexion();
+      
+      // Fetch the current category data
+      $query = $db->prepare($sql);
+      $query->execute(['categoryId' => $categoryId]);
+      $currentProductCategory = $query->fetch();
+      // Prepare the update SQL query
+      $sql = "UPDATE products_categories SET 
+              category = COALESCE(:category, :current_category_name)
+              WHERE category_id = :category_id";
+
+      try {
+          $query = $db->prepare($sql);
+          $query->execute([
+              'category' => $newCategoryName ?: $currentProductCategory['category'],
+              'category_id' => $categoryId,
+              
+              // Use current category value as fallback if not updated
+              'current_category_name' => $currentProductCategory['category']
+          ]);
+      } catch (Exception $err) {
+          echo $err->getMessage();
+      }
     }
 
 

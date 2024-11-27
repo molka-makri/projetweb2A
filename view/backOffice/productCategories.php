@@ -8,22 +8,22 @@ $categoryController = new ProductCategoryController();
 $categories = $categoryController->getCategories();
 
 
-// Check if the form was submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $categoryName = $_POST['category_name'] ?? '';
-    if (!empty($categoryName)) {
-        $newCategory = new ProductCategory(null, $categoryName);
-        $result = $categoryController->addCategory($newCategory);
-        if ($result) {
-            header("Location: productCategories.php");
-            exit;
-        } else {
-            $errorMessage = "Failed to add category. Please try again.";
+        // Check if the form was submitted
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
+            $categoryName = $_POST['add_category'] ?? '';
+            if (!empty($categoryName)) {
+                $newCategory = new ProductCategory(null, $categoryName);
+                $result = $categoryController->addCategory($newCategory);
+                if ($result) {
+                    header("Location: productCategories.php");
+                    exit;
+                } else {
+                    $errorMessage = "Failed to add category. Please try again.";
+                }
+            } else {
+                $errorMessage = "Please fill in the category name.";
+            }
         }
-    } else {
-        $errorMessage = "Please fill in the category name.";
-    }
-}
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_category'])) {
           $categoryId = $_POST['category_id'];
@@ -35,11 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Handle modification
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modify_category'])) {
           $categoryId = $_POST['category_id'];
-          $newCategoryName = $_POST['category_name'];
-          $categoryController->modifyCategory($categoryId, $newCategoryName);
-          header("Location: " . $_SERVER['PHP_SELF']); // Reload the current page
-          exit;
-        }
+          $newCategoryName = trim($_POST['category_name']); // Trim input to remove extra spaces
+          
+          if (!is_numeric($categoryId) || empty($newCategoryName)) {
+              $errorMessage = "Invalid data provided.";
+          } else {
+              $categoryController->modifyCategory($categoryId, $newCategoryName);
+              header("Location: " . $_SERVER['PHP_SELF']); // Reload the current page
+              exit;
+          }
+      }
 
 
 
@@ -802,7 +807,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <form id="addCategoryForm" action="productCategories.php" method="POST">
                     <div class="mb-3">
                         <label for="categoryName" class="form-label">Category Name</label>
-                        <input type="text" class="form-control" id="categoryName" name="category_name" placeholder="Enter category name" required>
+                        <input type="text" class="form-control" id="categoryName" name="add_category" placeholder="Enter category name" >
                     </div>
                     <button type="submit" class="btn btn-primary">Add Category</button>
                 </form>
@@ -820,6 +825,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <span><?= htmlspecialchars($category['category']); ?></span>
                         </div>
                         <div>
+                        <?php echo  $category['category_id'];?>
                             <button type="button" class="btn btn-sm btn-warning me-2" data-bs-toggle="modal" data-bs-target="#editModal<?= $category['category_id']; ?>">Modify</button>
                             <input type="hidden" name="category_id" value="<?= $category['category_id']; ?>">
                             <button type="submit" name="delete_category" class="btn btn-sm btn-danger">Delete</button>
@@ -840,7 +846,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <input type="hidden" name="category_id" value="<?= $category['category_id']; ?>">
                                     <div class="mb-3">
                                         <label for="category_name_<?= $category['category_id']; ?>" class="form-label">Category Name</label>
-                                        <input type="text" class="form-control" id="category_name_<?= $category['category_id']; ?>" name="category_name" value="<?= htmlspecialchars($category['category']); ?>" required>
+                                        <input type="text" class="form-control" id="category_name_<?= $category['category_id']; ?>" name="category_name" value="<?= htmlspecialchars($category['category']); ?>" >
                                     </div>
                                 </div>
                                 <div class="modal-footer">

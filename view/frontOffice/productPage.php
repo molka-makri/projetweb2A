@@ -1,3 +1,19 @@
+<?php
+// Include the file with your controller class and ensure it's instantiated
+ // Include the database config
+require_once '../../controller/productCategoryController.php'; // Include the category controller
+require_once "../../controller/productController.php";
+
+    // Create an instance of productController
+    $productController = new productController();
+
+    // Get all products from the database
+    $products = $productController->getProducts();
+
+$categoryController = new productCategoryController(); // Instantiate your controller
+$categories = $categoryController->getCategories(); // Fetch categories from the database
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -73,9 +89,9 @@
       </defs>
     </svg>
 
-    <div class="preloader-wrapper">
+    <!-- <div class="preloader-wrapper">
       <div class="preloader">
-      </div>
+      </div> -->
     </div>
 
 
@@ -600,9 +616,15 @@
                 <h3>Trending Products</h3>
                 <nav>
                   <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <a href="#" class="nav-link text-uppercase fs-6 active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all">All</a>
-                    <a href="#" class="nav-link text-uppercase fs-6" id="nav-fruits-tab" data-bs-toggle="tab" data-bs-target="#nav-fruits">Fruits & Veges</a>
-                    <a href="#" class="nav-link text-uppercase fs-6" id="nav-juices-tab" data-bs-toggle="tab" data-bs-target="#nav-juices">Juices</a>
+                      <<?php foreach ($categories as $index => $category): ?>
+                  <a href="#"
+                    class="nav-link text-uppercase fs-6 <?= $index === 0 ? 'active' : '' ?>"
+                    id="nav-<?= htmlspecialchars($category['category_id']) ?>-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-<?= htmlspecialchars($category['category_id']) ?>">
+                      <?= htmlspecialchars($category['category']) ?>
+                  </a>
+                       <?php endforeach; ?>
                   </div>
                 </nav>
               </div>
@@ -611,7 +633,7 @@
 
 <div class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
     <?php
-    include "../../controller/productController.php";
+  require_once "../../controller/productController.php";
 
     // Create an instance of productController
     $productController = new productController();

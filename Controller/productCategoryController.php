@@ -31,44 +31,42 @@ include(__DIR__ . '/../Model/productCategoryModel.php');
 
         public function addCategory($category) {
           try {
-              $db = config::getConnexion(); // Use the database connection method
-              $query = $db->prepare("INSERT INTO products_categories (category) VALUES (:category)");
-              $query->bindParam(':category', $category->getCategory(), PDO::PARAM_STR);
-              $query->execute();
+              $db = config::getConnexion(); 
+              $query = $db->prepare("INSERT INTO products_categories (category, category_img) VALUES (:category , :category_img)");
+              $query->execute(['category' => $category->getCategory(),
+                               'category_img' => $category->getCategoryImg()]);
               return true; // Return success if the query executes successfully
           } catch (PDOException $e) {
               echo $e->getMessage(); // Handle and display the exception
               return false; 
           }
       }
-      
-      public function modifyCategory($categoryId, $newCategoryName) {
-       // Get current category data from the database
-      $sql = "SELECT * FROM products_categories WHERE category_id = :categoryId";
-      $db = config::getConnexion();
-      
-      // Fetch the current category data
-      $query = $db->prepare($sql);
-      $query->execute(['categoryId' => $categoryId]);
-      $currentProductCategory = $query->fetch();
-      // Prepare the update SQL query
-      $sql = "UPDATE products_categories SET 
-              category = COALESCE(:category, :current_category_name)
-              WHERE category_id = :category_id";
-
-      try {
+          
+          public function modifyCategory($categoryId, $newCategoryName) {
+          $sql = "SELECT * FROM products_categories WHERE category_id = :categoryId";
+          $db = config::getConnexion();
+          
           $query = $db->prepare($sql);
-          $query->execute([
-              'category' => $newCategoryName ?: $currentProductCategory['category'],
-              'category_id' => $categoryId,
-              
-              // Use current category value as fallback if not updated
-              'current_category_name' => $currentProductCategory['category']
-          ]);
-      } catch (Exception $err) {
-          echo $err->getMessage();
-      }
-    }
+          $query->execute(['categoryId' => $categoryId]);
+          $currentProductCategory = $query->fetch();
+
+          $sql = "UPDATE products_categories SET 
+                  category = COALESCE(:category, :current_category_name)
+                  WHERE category_id = :category_id";
+
+          try {
+              $query = $db->prepare($sql);
+              $query->execute([
+                  'category' => $newCategoryName ?: $currentProductCategory['category'],
+                  'category_id' => $categoryId,
+                  
+                  // Use current category value as fallback if not updated
+                  'current_category_name' => $currentProductCategory['category']
+              ]);
+          } catch (Exception $err) {
+              echo $err->getMessage();
+          }
+        }
 
 
         public function deleteCategory($categoryId) {

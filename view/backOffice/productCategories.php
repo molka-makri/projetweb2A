@@ -9,10 +9,11 @@ $categories = $categoryController->getCategories();
 
 
         // Check if the form was submitted
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
-            $categoryName = $_POST['add_category'] ?? '';
-            if (!empty($categoryName)) {
-                $newCategory = new ProductCategory(null, $categoryName);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category']) && isset($_POST['categoryImg'])) {
+            $categoryName = trim($_POST['add_category']) ?? '';
+            $categoryImg = trim($_POST['categoryImg']) ?? '';
+            if (!empty($categoryName) && (!empty($categoryImg))) {
+                $newCategory = new ProductCategory(null,$categoryName,$categoryImg);
                 $result = $categoryController->addCategory($newCategory);
                 if ($result) {
                     header("Location: productCategories.php");
@@ -21,7 +22,11 @@ $categories = $categoryController->getCategories();
                     $errorMessage = "Failed to add category. Please try again.";
                 }
             } else {
+                if (empty($categoryName))
                 $errorMessage = "Please fill in the category name.";
+                elseif (empty($categoryImg)) {
+                  $errorMessage = "Please fill in the category image.";
+              }
             }
         }
 
@@ -808,6 +813,10 @@ $categories = $categoryController->getCategories();
                     <div class="mb-3">
                         <label for="categoryName" class="form-label">Category Name</label>
                         <input type="text" class="form-control" id="categoryName" name="add_category" placeholder="Enter category name" >
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryImg" class="form-label">Category Image</label>
+                        <input type="text" class="form-control" id="categoryImg" name="categoryImg" placeholder="Enter category image" >
                     </div>
                     <button type="submit" class="btn btn-primary">Add Category</button>
                 </form>

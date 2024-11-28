@@ -27,6 +27,58 @@ class ServiceController {
         }
     }
 
+    public function listServiceAlphabetically() {
+        // Tri par ordre alphabétique (basé sur la colonne 'nom')
+        $sql = "SELECT 
+                    services.service_id, 
+                    services.nom, 
+                    services.contact, 
+                    services.photo, 
+                    service_types.type_name 
+                FROM 
+                    services
+                INNER JOIN 
+                    service_types
+                ON 
+                    services.service_type_id = service_types.service_type_id
+                ORDER BY 
+                    services.nom ASC"; // Tri alphabétique sur 'nom'
+        $db = config::getConnexion();
+
+        try {
+            $list = $db->query($sql);
+            return $list;
+        } catch (Exception $err) {
+            die("Erreur lors du tri alphabétique des services : " . $err->getMessage());
+        }
+    }
+
+    public function listServiceByLatest() {
+        // Tri par dernier ajouté (basé sur l'identifiant croissant)
+        $sql = "SELECT 
+                    services.service_id, 
+                    services.nom, 
+                    services.contact, 
+                    services.photo, 
+                    service_types.type_name 
+                FROM 
+                    services
+                INNER JOIN 
+                    service_types
+                ON 
+                    services.service_type_id = service_types.service_type_id
+                ORDER BY 
+                    services.service_id DESC"; // Dernier ajouté en premier
+        $db = config::getConnexion();
+
+        try {
+            $list = $db->query($sql);
+            return $list;
+        } catch (Exception $err) {
+            die("Erreur lors du tri des derniers services ajoutés : " . $err->getMessage());
+        }
+    }
+
     public function listServiceTypes() {
         $sql = "SELECT * FROM service_types";
         $db = config::getConnexion();

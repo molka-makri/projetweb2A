@@ -2,32 +2,19 @@
 include '../../Controller/serviceController.php';
 
 $controller = new ServiceController();
-$services = $controller->listService();
+
+// Par défaut, tri alphabétique
+$sortMode = isset($_GET['sort']) ? $_GET['sort'] : 'alphabetical';
+
+// Appliquer le tri selon le mode choisi
+if ($sortMode === 'alphabetical') {
+    $services = $controller->listServiceAlphabetically();
+} elseif ($sortMode === 'latest') {
+    $services = $controller->listServiceByLatest();
+} else {
+    $services = $controller->listService();
+}
 ?>
-
-
-
-<?php
-// include '../../Controller/serviceController.php';
-//     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-//         // Validate and sanitize inputs
-//         $service_type_id = filter_input(INPUT_POST, 'service_type_id', FILTER_VALIDATE_INT);
-//         $nom = filter_input(INPUT_POST, 'nom', FILTER_SANITIZE_STRING);
-//         $contact = filter_input(INPUT_POST, 'contact', FILTER_SANITIZE_STRING);
-//         $photo = filter_input(INPUT_POST, 'photo', FILTER_SANITIZE_URL);
-
-//         if ($service_type_id && $nom && $contact) {
-//             // Create a new Service instance
-//             $service = new Service(null, $service_type_id, $nom, $contact, $photo);
-
-//             // Add the service to the database
-//             $manager = new ServiceController();
-//             $manager->addService($service);
-//         } else {
-//             echo "Veuillez remplir tous les champs requis.";
-//         }
-//     }
-    ?> 
     
 <!DOCTYPE html>
 <html lang="en">
@@ -43,6 +30,7 @@ $services = $controller->listService();
       href="assets/img/kaiadmin/favicon.ico"
       type="image/x-icon"
     />
+    
 
     <!-- Fonts and icons -->
     <script src="assets/js/plugin/webfont/webfont.min.js"></script>
@@ -682,6 +670,34 @@ $services = $controller->listService();
             </td>
         </tr>
         <?php } ?>
+        <!-- Formulaire pour choisir le mode de tri -->
+<form method="GET" action="servicelist.php" style="margin-bottom: 20px;">
+    <label for="sort">Trier par :</label>
+    <select name="sort" id="sort">
+        <option value="alphabetical" <?= $sortMode === 'alphabetical' ? 'selected' : '' ?>>Alphabétique</option>
+        <option value="latest" <?= $sortMode === 'latest' ? 'selected' : '' ?>>Dernier ajouté</option>
+    </select>
+    <button type="submit">Trier</button>
+</form>
+
+<!-- Tableau des services -->
+<table>
+    <thead>
+        <tr>
+            <th>Nom du Service</th>
+            <th>Contact</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($services as $service): ?>
+            <tr>
+                <td><?= htmlspecialchars($service['nom']) ?></td>
+                <td><?= htmlspecialchars($service['contact']) ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
     </table>
     
 </body>

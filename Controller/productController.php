@@ -5,6 +5,7 @@ include(__DIR__ . '/../Model/productModel.php');
 class productController {
     public function getProducts() {
                 $sql = " SELECT 
+                products.Product_id,
                 products.Product_img, 
                 products.Product_name, 
                 products.Product_description, 
@@ -61,7 +62,7 @@ class productController {
     }
 
     public function getProduct($Product_id) {
-        $sql = "SELECT * FROM products WHERE id = $Product_id";
+        $sql = "SELECT * FROM products WHERE Product_id = $Product_id";
         $db = config::getConnexion();
         $query = $db->prepare($sql);
 

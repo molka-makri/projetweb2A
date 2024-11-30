@@ -92,7 +92,7 @@ $categories = $categoryController->getCategories(); // Fetch categories from the
     <!-- <div class="preloader-wrapper">
       <div class="preloader">
       </div> -->
-    </div>
+    <!-- </div> -->
 
 
     <!-- Cart styling -->
@@ -193,10 +193,6 @@ $categories = $categoryController->getCategories(); // Fetch categories from the
           </div>
           
           <div class="col-sm-8 col-lg-4 d-flex justify-content-end gap-5 align-items-center mt-4 mt-sm-0 justify-content-center justify-content-sm-end">
-            <!-- <div class="support-box text-end d-none d-xl-block">
-              <span class="fs-6 text-muted">For Support?</span>
-              <h5 class="mb-0">+980-34984089</h5>
-            </div> -->
 
             <ul class="d-flex justify-content-end list-unstyled m-0">
               <li>
@@ -643,8 +639,8 @@ $categories = $categoryController->getCategories(); // Fetch categories from the
 
     // Check if there are products
     if ($products && $products->rowCount() > 0) {
-        // Loop through the products and display them using the provided template
         while ($product = $products->fetch(PDO::FETCH_ASSOC)) {
+            
             echo "<div class='col'>"; // Each product is wrapped in a col
             echo "<div class='product-item'>";
             echo "<a href='#' class='btn-wishlist'><svg width='24' height='24'><use xlink:href='#heart'></use></svg></a>";
@@ -671,10 +667,11 @@ $categories = $categoryController->getCategories(); // Fetch categories from the
             echo "</button>";
             echo "</span>";
             echo "</div>";
-            echo "<a href='#' class='nav-link'>Add to Cart <iconify-icon icon='uil:shopping-cart'></iconify-icon></a>";
+            echo "<a href='productDetails.php?id=" . htmlspecialchars($product['Product_id']) . "' class='nav-link'> details <iconify-icon icon='uil:shopping-cart'></iconify-icon></a>";
             echo "</div>";
             echo "</div>";
             echo "</div>"; // End of product col
+            
         }
     } else {
         echo "<p>No products found.</p>";

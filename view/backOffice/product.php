@@ -885,7 +885,7 @@ if (isset($_POST['delete_product_id'])) {
     </div>
     <div class="mb-3">
         <label for="productImage" class="form-label">Product Image URL</label>
-        <input type="url" class="form-control" id="productImage" name="product_img" >
+        <input  class="form-control" id="productImage" name="product_img" >
     </div>
     <button type="submit" class="btn btn-primary">Add Product</button>
 </form>

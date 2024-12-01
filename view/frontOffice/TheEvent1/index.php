@@ -665,7 +665,7 @@ include '../../../Controller/eventController.php';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="participationForm" method="POST" action="../../view/backOffice/events/participants.php">
+                <form id="participationForm" method="POST" action="../../../view/backOffice/events/participants.php">
                     <div class="mb-3">
                         <label for="username" class="form-label">Your Name</label>
                         <input type="text" class="form-control" id="username" name="username" required>

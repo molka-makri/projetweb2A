@@ -57,7 +57,7 @@ if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'
 
         
         $eventController = new eventsController();
-        $eventController->updateEvent($updatedEvent);
+        $eventController->updateEvent1($updatedEvent);
 
         // Redirect to event page with success
         header('Location: event.php?success=1');

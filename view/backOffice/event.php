@@ -38,34 +38,36 @@ include '../../Controller/eventController.php'; // Include the event controller
       }
   }
   
-  // Update an event
-  if (isset($_POST['event_name'], $_POST['event_description'], $_POST['event_date'], $_POST['event_location'], $_POST['event_id'], $_POST['Event_organizer'])) {
-      if (!empty($_POST['event_name']) || !empty($_POST['event_description']) || !empty($_POST['event_date']) || !empty($_POST['event_location']) || !empty($_POST['Event_organizer'])) {
-  
-          // Ensure event_date is properly initialized as DateTime or null
-          $eventDate = !empty($_POST['event_date']) ? new DateTime($_POST['event_date']) : null;
-  
-          // Create the updated event object
-          $updatedEvent = new Event(
-              $_POST['event_id'], // Event ID for updating
-              $_POST['event_name'],
-              $_POST['event_description'],
-              $eventDate, // DateTime object or null
-              $_POST['event_location'],
-              $_POST['Event_organizer']
-          );
-  
-          
-          $eventController = new eventsController();
-          $eventController->updateEvent($updatedEvent);
-  
-          // Redirect to event page with success
-          header('Location: event.php?success=1');
-          exit; 
-      } else {
-          echo "Please fill in at least one field to update.";
-      }
+ // Update an event
+if (isset($_POST['event_name1'], $_POST['event_description1'], $_POST['event_date1'], $_POST['event_location1'], $_POST['event_id'], $_POST['Event_organizer1'])) {
+  // Ensure at least one field is filled in
+  if (!empty($_POST['event_name1']) && !empty($_POST['event_description1']) && !empty($_POST['event_date1']) && !empty($_POST['event_location1']) && !empty($_POST['Event_organizer1'])) {
+
+      // Initialize event_date as DateTime or null
+      $eventDate = !empty($_POST['event_date1']) ? new DateTime($_POST['event_date1']) : null;
+
+      // Create the updated event object
+      $updatedEvent = new Event(
+          $_POST['event_id1'],  // Event ID for updating
+          $_POST['event_name1'],
+          $_POST['event_description1'],
+          $eventDate, // DateTime object or null
+          $_POST['event_location1'],
+          $_POST['Event_organizer1']
+      );
+
+      // Call the controller to update the event
+      $eventController = new eventsController();
+      $eventController->updateEvent1($updatedEvent);
+
+      // Redirect to event page with success
+      header('Location: event.php?success=1');
+      exit; // Ensure no code runs after the redirection
+  } else {
+      echo "Please fill in all fields to update the event.";
   }
+}
+
   
   // Delete an event
   if (isset($_POST['delete_event_id'])) {
@@ -883,7 +885,6 @@ include '../../Controller/eventController.php'; // Include the event controller
                 // Fetch all organizers
                 $organizersController = new organizersController();
                 $organizers = $organizersController->afficheOrganizers();
-
                 foreach ($organizers as $organizer) {
                     $selected = isset($_GET['organizer_id']) && $_GET['organizer_id'] == $organizer['Organizer_id'] ? 'selected' : '';
                     echo "<option value='" . htmlspecialchars($organizer['Organizer_id']) . "' $selected>" . htmlspecialchars($organizer['Organizer_name']) . "</option>";
@@ -895,33 +896,56 @@ include '../../Controller/eventController.php'; // Include the event controller
 
     <?php
     $eventsController = new eventsController();
+    $events = isset($_GET['organizer_id']) && !empty($_GET['organizer_id'])
+        ? $eventsController->getEventsByOrganizer($_GET['organizer_id'])
+        : $eventsController->getEvents(); // Fetch all events or by selected organizer
 
-    // Check if an organizer filter is applied
-    if (isset($_GET['organizer_id']) && !empty($_GET['organizer_id'])) {
-        $organizerId = (int)$_GET['organizer_id'];
-        $events = $eventsController->getEventsByOrganizer($organizerId); // Fetch events for selected organizer
-    } else {
-        $events = $eventsController->getEvents(); // Fetch all events
-    }
-
-    // Display events
     if ($events && $events->rowCount() > 0) {
-        echo "<div class='row'>";
-
+        echo "<div class='card-container'>";
         while ($event = $events->fetch(PDO::FETCH_ASSOC)) {
-            echo "<div class='col-md-4 mb-4'>";
             echo "<div class='card'>";
             echo "<div class='card-body'>";
             echo "<h5 class='card-title'>" . htmlspecialchars($event['Event_name']) . "</h5>";
             echo "<p class='card-text'>" . htmlspecialchars($event['Event_description']) . "</p>";
             echo "<p class='card-text'><strong>Date: " . htmlspecialchars($event['Event_date']) . "</strong></p>";
-            echo "<p class='card-text'><small class='text-muted'>Place: " . htmlspecialchars($event['Event_location']) . "</small></p>";
+            echo "<p class='card-text'><small class='text-muted'>Location: " . htmlspecialchars($event['Event_location']) . "</small></p>";
             echo "<p class='card-text'><small class='text-muted'>ID: " . htmlspecialchars($event['Event_id']) . "</small></p>";
-            echo "</div>";
-            echo "</div>";
-            echo "</div>";
-        }
 
+            // Edit Button
+           // Edit button for the event
+echo "<button class='btn btn-secondary btn-edit' onclick=\"showEditForm('" . $event['Event_id'] . "', '" . addslashes($event['Event_name']) . "', '" . addslashes($event['Event_description']) . "', '" . $event['Event_date'] . "', '" . addslashes($event['Event_location']) . "')\">Edit</button>";
+
+// Edit Form (hidden by default)
+              echo "<form action='event.php' method='post' class='edit-form' id='editForm-" . $event['Event_id'] . "' style='display: none; margin-top: 10px;'>";
+              echo "<input type='hidden' name='event_id1' value='" . htmlspecialchars($event['Event_id']) . "'>";
+              echo "<div class='mb-3'>";
+              echo "<label for='eventName'>Event Name</label>";
+              echo "<input type='text' class='form-control' name='event_name1' id='name-" . $event['Event_id'] . "' value='" . htmlspecialchars($event['Event_name']) . "' required>";
+              echo "</div>";
+              echo "<div class='mb-3'>";
+              echo "<label for='eventDescription'>Event Description</label>";
+              echo "<textarea class='form-control' name='event_description1' id='description-" . $event['Event_id'] . "' required>" . htmlspecialchars($event['Event_description']) . "</textarea>";
+              echo "</div>";
+              echo "<div class='mb-3'>";
+              echo "<label for='eventDate'>Event Date</label>";
+              echo "<input type='date' class='form-control' name='event_date1' id='date-" . $event['Event_id'] . "' value='" . htmlspecialchars($event['Event_date']) . "' required>";
+              echo "</div>";
+              echo "<div class='mb-3'>";
+              echo "<label for='eventLocation'>Event Location</label>";
+              echo "<input type='text' class='form-control' name='event_location1' id='location-" . $event['Event_id'] . "' value='" . htmlspecialchars($event['Event_location']) . "' required>";
+              echo "</div>";
+              echo "<button type='submit' class='btn btn-primary'>Update Event</button>";
+              echo "</form>";
+
+            // Delete Form
+            echo "<form action='event.php' method='post' onsubmit=\"return confirm('Are you sure you want to delete this event?');\">";
+            echo "<input type='hidden' name='delete_event_id' value='" . htmlspecialchars($event['Event_id']) . "'>";
+            echo "<button type='submit' class='btn btn-danger'>Delete Event</button>";
+            echo "</form>";
+
+            echo "</div>"; // Close card-body
+            echo "</div>"; // Close card
+        }
         echo "</div>";
     } else {
         echo "<p>No events found.</p>";
@@ -929,49 +953,20 @@ include '../../Controller/eventController.php'; // Include the event controller
     ?>
 </div>
 
-
-<!-- Edit Event Form -->
-<div class="container mt-5">
-    <h2>Edit Event</h2>
-    <form action="event.php" method="post">
-        <div class="mb-3">
-            <label for="eventId" class="form-label">Event ID</label>
-            <input type="number" class="form-control" id="eventId" name="event_id" placeholder="Enter Event ID" >
-        </div>
-        <div class="mb-3">
-            <label for="eventName" class="form-label">Event Name</label>
-            <input type="text" class="form-control" id="eventName" name="event_name" placeholder="Enter Event Name">
-        </div>
-        <div class="mb-3">
-            <label for="eventDescription" class="form-label">Event Description</label>
-            <textarea class="form-control" id="eventDescription" name="event_description" rows="3" placeholder="Enter Event Description"></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="eventDate" class="form-label">Event Date</label>
-            <input type="date" class="form-control" id="eventDate" name="event_date" placeholder="Enter Event Date">
-        </div>
-        <div class="mb-3">
-            <label for="eventLocation" class="form-label">Event Location</label>
-            <input type="text" class="form-control" id="eventLocation" name="event_location" placeholder="Enter Event Place">
-        </div>
-        <div class="mb-3">
-            <label for="eventOrganizer" class="form-label">Event Organizer</label>
-            <input type="text" class="form-control" id="eventOrganizer" name="Event_organizer" placeholder="Enter Event Organizer">
-        </div>
-        <button type="submit" class="btn btn-primary">Update Event</button>
-    </form>
-</div>
-
-<div class="container mt-5">
-    <h2>Delete Event</h2>
-    <form action="event.php" method="post">
-        <div class="mb-3">
-            <label for="deleteEventId" class="form-label">Event ID</label>
-            <input type="number" class="form-control" id="deleteEventId" name="delete_event_id" placeholder="Enter Event ID" required>
-        </div>
-        <button type="submit" class="btn btn-danger">Delete Event</button>
-    </form>
-</div>
+<script>
+function showEditForm(id, name, description, date, location) {
+    const form = document.getElementById(`editForm-${id}`);
+    if (form.style.display === "none") {
+        form.style.display = "block";
+        document.getElementById(`name-${id}`).value = name;
+        document.getElementById(`description-${id}`).value = description;
+        document.getElementById(`date-${id}`).value = date;
+        document.getElementById(`location-${id}`).value = location;
+    } else {
+        form.style.display = "none";
+    }
+}
+</script>
 
 ____________________________________________________________________________________________________________________  
 <footer class="footer">

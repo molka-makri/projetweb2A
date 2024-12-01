@@ -1,6 +1,12 @@
 <?php
 include(__DIR__ . '/../Model/eventModel.php');
 
+include "../../../vendor/autoload.php"; 
+//../../../../../vendor/autoload.php; // Use autoloader
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 class eventsController {
     // Fetch all events
@@ -81,40 +87,40 @@ public function addEvent($event) {
     
    
     // Update an event
-        public function updateEvent($event) {
-            $sql = "UPDATE events SET 
-                        Event_name = COALESCE(:Event_name, Event_name),
-                        Event_description = COALESCE(:Event_description, Event_description),
-                        Event_date = COALESCE(:Event_date, Event_date),
-                        Event_location = COALESCE(:Event_location, Event_location),
-                        Event_organizer = COALESCE(:Event_organizer, Event_organizer)
-                    WHERE Event_id = :Event_id";
+    public function updateEvent1($event) {
+        // Assume $db is your database connection
+        $db = config::getConnexion();
+    
+        // Prepare the SQL query to update the event
+        $query = "UPDATE events SET 
+                    Event_name = :name, 
+                    Event_description = :description, 
+                    Event_date = :date, 
+                    Event_location = :location, 
+                    Event_organizer = :organizer 
+                  WHERE Event_id = :id";
         
-            $db = config::getConnexion();
-        
-            try {
-                $query = $db->prepare($sql);
-        
-                // Format the event date if it is a DateTime object
-                $formattedDate = $event->getEvent_date() instanceof DateTime
-                                 ? $event->getEvent_date()->format('Y-m-d H:i:s')
-                                 : null;
-        
-                // Execute the update query
-                $query->execute([
-                    'Event_name' => $event->getEvent_name(),
-                    'Event_description' => $event->getEvent_description(),
-                    'Event_date' => $formattedDate,
-                    'Event_location' => $event->getEvent_location(),
-                    'Event_id' => $event->getEvent_id(),
-                    'Event_organizer' => $event->getEvent_organizer() // Add the event organizer as an additional field in your table. If not present in your model, add it here.
-                ]);
-        
-                echo "Event updated successfully!";
-            } catch (Exception $e) {
-                echo "Error updating event: " . $e->getMessage();
-            }
-        }
+            // Prepare the statement
+            $stmt = $db->prepare($query);
+    
+            // Format the event date if it is a DateTime object
+            $formattedDate = $event->getEvent_date() instanceof DateTime 
+                             ? $event->getEvent_date()->format('Y-m-d H:i:s') 
+                             : null;
+    
+            // Bind the values
+            $stmt->bindParam(':name', $event->getEvent_name());
+            $stmt->bindParam(':description', $event->getEvent_description());
+            $stmt->bindParam(':date', $formattedDate);
+            $stmt->bindParam(':location', $event->getEvent_location());
+            $stmt->bindParam(':organizer', $event->getEvent_organizer());
+            $stmt->bindParam(':id', $event->getEvent_id());
+    
+            // Execute the query
+            $stmt->execute();
+            
+    }
+    
 
         public function getEventsByOrganizer($organizerId) {
             $db = new PDO('mysql:host=localhost;dbname=serenity_springs', 'root', ''); // Adjust credentials
@@ -127,44 +133,67 @@ public function addEvent($event) {
         
 
         public function addParticipant($username, $email, $eventId) {
-            $db = config::getConnexion();
-        
-            try {
-                // Disable foreign key checks
-                $db->exec("SET foreign_key_checks = 0");
-        
-                // Check if the participant already exists for this event
-                $checkSql = "SELECT * FROM event_participations WHERE email = :email AND event_id = :event_id";
-                $checkQuery = $db->prepare($checkSql);
-                $checkQuery->execute(['email' => $email, 'event_id' => $eventId]);
-        
-                if ($checkQuery->rowCount() > 0) {
-                    echo "You are already registered for this event.";
-                    return;
-                }
-        
-                // Create a new Participant object and save it
-                $participant = new Participant($username, $email, $eventId, $db);
-        
-                if ($participant->save()) {
-                    // Send confirmation email to the participant
-                    $subject = "Thank You for Participating in the Event";
-                    $message = "Hello $username,\n\nThank you for participating in the event. We will send you more details soon.";
-                    $headers = "From: no-reply@serenitysprings.com";
-                    //mail($email, $subject, $message, $headers);
-        
-                    echo "<div style='font-size: 24px; font-weight: bold; color: green; text-align: center;'>Thank you for your participation! A confirmation email has been sent.</div>";
+    $db = config::getConnexion();
 
-                } else {
-                    echo "There was an error processing your participation. Please try again.";
-                }
-            } catch (Exception $e) {
-                echo "Error: " . $e->getMessage();
-            } finally {
-                // Re-enable foreign key checks
-                $db->exec("SET foreign_key_checks = 1");
-            }
+    try {
+        // Disable foreign key checks temporarily
+        $db->exec("SET foreign_key_checks = 0");
+
+        // Check if the participant is already registered for this event
+        $checkSql = "SELECT * FROM event_participations WHERE email = :email AND event_id = :event_id";
+        $checkQuery = $db->prepare($checkSql);
+        $checkQuery->execute(['email' => $email, 'event_id' => $eventId]);
+
+        if ($checkQuery->rowCount() > 0) {
+            echo "You are already registered for this event.";
+            return;
         }
+
+        // Create a new Participant object and save it
+        $participant = new Participant($username, $eventId, $email, $db);
+
+        if ($participant->save()) {
+            // Send confirmation email to the participant using PHPMailer
+            $mail = new PHPMailer(true);
+
+            try {
+                //Server settings
+                $mail->isSMTP();                                            // Send using SMTP
+                $mail->Host       = 'smtp.gmail.com';                         // Set the SMTP server to use
+                $mail->SMTPAuth   = true;                                     // Enable SMTP authentication
+                $mail->Username   = 'mariemmolka50@gmail.com';                   // SMTP username
+                $mail->Password   = 'nhou fxhj flpq apuv';                          // SMTP password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;           // Enable TLS encryption
+                $mail->Port       = 587;                                      // TCP port to connect to (587 is typical for Gmail)
+
+                //Recipients
+                $mail->setFrom('molka.makri@epsrit.tn', 'Serenity Springs');
+                $mail->addAddress($email, $username);                         // Add recipient
+
+                // Content
+                $mail->isHTML(true);                                          // Set email format to HTML
+                $mail->Subject = 'Thank You for Participating in the Event';
+                $mail->Body    = "Thank you for participating in the event. We will send you more details soon.";
+
+                // Send the email
+                $mail->send();
+
+                echo "<div style='font-size: 24px; font-weight: bold; color: green; text-align: center;'>Thank you for your participation! A confirmation email has been sent.</div>";
+            } catch (Exception $e) {
+                echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            }
+        } else {
+            echo "There was an error processing your participation. Please try again.";
+        }
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+    } finally {
+        // Re-enable foreign key checks
+        $db->exec("SET foreign_key_checks = 1");
+    }
+    
+}
+
         
         
         

@@ -37,7 +37,7 @@ class config
 
                
 
-                echo "connected successfully";
+                //echo "connected successfully";
 
             } catch (Exception $e) {
 

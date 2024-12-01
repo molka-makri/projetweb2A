@@ -1,6 +1,6 @@
 <?php
 include(__DIR__ . '/../Model/Post.php');
-include(__DIR__ . '/../config.php');
+include_once(__DIR__ . '/../config.php');
 
 class PostController {
     public function listPosts() {
@@ -69,6 +69,21 @@ class PostController {
             return false;
         }
     }
+
+    public function searchPosts($searchQuery) {
+        $sql = "SELECT * FROM posts WHERE title LIKE :search OR content LIKE :search";
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare($sql);
+            $query->bindValue(':search', '%' . $searchQuery . '%', PDO::PARAM_STR);
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
+    
 }
 ?>
 

@@ -1,6 +1,6 @@
 <?php
 include(__DIR__ . '/../Model/Comments.php');
-include(__DIR__ . '/../config.php');
+include_once(__DIR__ . '/../config.php');
 
 class CommentController {
     public function listComments() {

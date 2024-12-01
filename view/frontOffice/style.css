@@ -155,6 +155,21 @@ body {
   --bs-warning-rgb: 255, 249, 235;
   --bs-info-rgb: 230, 243, 250;
 }
+.bg-light-green {
+  background-color: #A8E6CF; /* Light green background */
+}
+.navbar .nav-link {
+  color: #ffffff; /* White text for contrast */
+}
+.navbar .nav-link:hover {
+  color: #81c784; /* Slightly darker green on hover */
+}
+.dropdown-menu {
+  background-color: #A8E6CF; /* Light green for dropdown as well */
+}
+.dropdown-menu a:hover {
+  background-color: #81c784; /* Darker green on hover */
+}
 .btn-primary {
   --bs-btn-color: #fff;
   --bs-btn-bg: #ffc43f;

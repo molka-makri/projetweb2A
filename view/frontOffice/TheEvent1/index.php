@@ -39,6 +39,26 @@ include '../../../Controller/eventController.php';
     Author: BootstrapMade.com
     License: https://bootstrapmade.com/license/
   ======================================================= -->
+  <style>
+       
+       .language-btn {
+            position: fixed; /* Fixed position on the screen */
+            top: 20px; /* Adjust to place it where you want */
+            right: 20px; /* Align it to the right side */
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Change button color on hover */
+        .language-btn:hover {
+            background-color: #45a049;
+        }
+  </style>
 </head>
 
 <body>
@@ -48,6 +68,7 @@ include '../../../Controller/eventController.php';
   ============================-->
   <header id="header">
     <div class="container">
+    
 
       <!--<div id="logo" class="pull-left">
          Uncomment below if you prefer to use a text logo -->
@@ -58,17 +79,21 @@ include '../../../Controller/eventController.php';
       <nav id="nav-menu-container">
         <ul class="nav-menu">
           
-          <li><a href="#about">About our Events</a></li>
-          <li><a href="#speakers">organizers</a></li>
-          <li><a href="#schedule">Schedule</a></li>
-          <li><a href="#venue">Venue</a></li>
+          <li><a href="#about" class="about-title">About our Events</a></li>
+          <li><a href="#speakers" class="organizers-title">organizers</a></li>
+          <li><a href="#events" class="program-title">Schedule</a></li>
+          <li><a href="#venue" class="venue-title">Venue</a></li>
           
-          <li><a href="#gallery">Gallery</a></li>
-          <li><a href="#supporters">Sponsors</a></li>
-          <li><a href="#contact">Contact</a></li>
-          <li class="buy-tickets"><a href="#buy-tickets">Buy Tickets</a></li>
+          <li><a href="#gallery" class="gallery-title">Gallery</a></li>
+          <li><a href="#supporters" class="sponsor-title" >Sponsors</a></li>
+          <li><a href="#contact" class="contact-title">Contact</a></li>
+          
         </ul>
       </nav><!-- #nav-menu-container -->
+      <div class="language-switcher">
+        <button id="enBtn">EN</button>
+        <button id="frBtn">FR</button>
+    </div>
     </div>
   </header><!-- #header -->
 
@@ -79,9 +104,11 @@ include '../../../Controller/eventController.php';
     <div class="intro-container wow fadeIn">
       <h1 class="mb-4 pb-0">Serenity<br><span>Springs</span> Events</h1>
       
-      <a href="#about" class="about-btn scrollto">About The Event</a>
+      <a href="#about" class=" about-title1">About The Event</a>
     </div>
   </section>
+  
+  
 
   <main id="main">
 
@@ -92,8 +119,8 @@ include '../../../Controller/eventController.php';
       <div class="container">
         <div class="row">
           <div class="col-lg-6">
-            <h2>About our Events</h2>
-            <p>Our events are designed to inspire, educate, and connect individuals who are passionate about sustainable farming, innovation, and the future of food production. Whether you're a seasoned professional or just starting out, joining our events offers a unique opportunity to learn from experts, share ideas, and be part of a community dedicated to making a positive impact on the world. Don’t miss out—become a part of the agricultural revolution at Serenity Springs today!</p>
+            <h2 class="about-title2">About our Events</h2>
+            <p  class="about-content">Our events are designed to inspire, educate, and connect individuals who are passionate about sustainable farming, innovation, and the future of food production. Whether you're a seasoned professional or just starting out, joining our events offers a unique opportunity to learn from experts, share ideas, and be part of a community dedicated to making a positive impact on the world. Don’t miss out—become a part of the agricultural revolution at Serenity Springs today!</p>
           </div>
           
           
@@ -107,8 +134,8 @@ include '../../../Controller/eventController.php';
     <section id="speakers" class="wow fadeInUp">
   <div class="container">
     <div class="section-header">
-      <h2>Event Organizers</h2>
-      <p>Here are some of our Organizers</p>
+      <h2 class="organizers-title1">Event Organizers</h2>
+      <p class="organizers-content">Here are some of our Organizers</p>
     </div>
 
     <div class="row">
@@ -165,8 +192,8 @@ include '../../../Controller/eventController.php';
     <section id="events" class="wow fadeInUp">
   <div class="container">
     <div class="section-header">
-      <h2>Event Schedule</h2>
-      <p>Here is our event schedule</p>
+      <h2 class="program-title1">Event Schedule</h2>
+      <p class="program-content">Here is our event schedule</p>
     </div>
 
     <div class="row" id="events-container">
@@ -471,7 +498,7 @@ include '../../../Controller/eventController.php';
 
     <!--==========================
       Buy Ticket Section
-    ============================-->
+    ============================
     <section id="buy-tickets" class="section-with-bg wow fadeInUp">
       <div class="container">
 
@@ -523,7 +550,7 @@ include '../../../Controller/eventController.php';
               </div>
             </div>
           </div>
-          <!-- Pro Tier -->
+          <!-- Pro Tier 
           <div class="col-lg-4">
             <div class="card">
               <div class="card-body">
@@ -550,7 +577,7 @@ include '../../../Controller/eventController.php';
 
       </div>
 
-      <!-- Modal Order Form -->
+      <!-- Modal Order Form 
       <div id="buy-ticket-modal" class="modal fade">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -581,9 +608,9 @@ include '../../../Controller/eventController.php';
                 </div>
               </form>
             </div>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
+          </div><!-- /.modal-content 
+        </div><!-- /.modal-dialog 
+      </div><!-- /.modal 
 
     </section>
 
@@ -698,6 +725,38 @@ include '../../../Controller/eventController.php';
         });
     });
 </script>
+<!--traduction----->
+<script>
+    // Function to load JSON data
+    function loadLanguage(language) {
+      fetch(language + '.json')
+        .then(response => response.json())
+        .then(data => {
+          // Set the content based on the language
+          document.querySelector('.about-title').textContent = data.about_title;
+          document.querySelector('.about-content').textContent = data.about_content;
+          document.querySelector('.organizers-title').textContent = data.organizers_title;
+          document.querySelector('.organizers-content').textContent = data.organizers_content;
+          document.querySelector('.program-title').textContent = data.program_title;
+          document.querySelector('.program-content').textContent = data.program_content;
+          
+          document.querySelector('.gallery-title').textContent = data.gallery_title;
+          document.querySelector('.about-title1').textContent = data.about_title1;
+          document.querySelector('.about-title2').textContent = data.about_title2;
+          document.querySelector('.organizers-title1').textContent = data.organizers_title1;
+          document.querySelector('.program-title1').textContent = data.program_title1;
+      
+        })
+        .catch(err => console.log('Error loading language:', err));
+    }
+
+    // Set default language to English
+    loadLanguage('english');
+
+    // Event listeners for language switcher buttons
+    document.getElementById('enBtn').addEventListener('click', () => loadLanguage('english'));
+    document.getElementById('frBtn').addEventListener('click', () => loadLanguage('french'));
+  </script>
   <!--==========================
     Footer
   ============================-->

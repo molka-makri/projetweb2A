@@ -27,27 +27,30 @@ if (isset($_POST['organizer_name'], $_POST['organizer_email'])) {
 }
 
 // Update an organizer
-if (isset($_POST['organizer_name'], $_POST['organizer_email'], $_POST['organizer_id'])) {
-    if (!empty($_POST['organizer_name']) || !empty($_POST['organizer_email'])) {
+// Update an organizer
+if (isset($_POST['organizer_name1'], $_POST['organizer_email1'], $_POST['organizer_id1'])) {
+    // Check that at least one field is filled in
+    if (!empty($_POST['organizer_name1']) && !empty($_POST['organizer_email1'])) {
 
         // Create the updated organizer object
         $updatedOrganizer = new Organizer(
-            $_POST['organizer_id'], // Organizer ID for updating
-            $_POST['organizer_name'],
-            $_POST['organizer_email']
+            $_POST['organizer_id1'],  // Organizer ID for updating
+            $_POST['organizer_name1'],
+            $_POST['organizer_email1']
         );
 
         // Call the controller to update the organizer
         $organizerController = new organizersController();
-        $organizerController->updateAndReplaceOrganizer($updatedOrganizer);
+        $organizerController->updatorganizer1($updatedOrganizer);
 
         // Redirect to organizer page with success
         header('Location: organizer.php?success=1');
         exit; // Ensure no code runs after the redirection
     } else {
-        echo "Please fill in at least one field to update.";
+        echo "Please fill in both fields to update.";
     }
 }
+
 
 
 
@@ -311,6 +314,7 @@ if (!class_exists('organizersController')) {
                   </ul>
                 </div>
               </li>
+              <!--
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarLayouts">
                   <i class="fas fa-th-list"></i>
@@ -369,6 +373,7 @@ if (!class_exists('organizersController')) {
                   </ul>
                 </div>
               </li>
+              
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#maps">
                   <i class="fas fa-map-marker-alt"></i>
@@ -411,17 +416,18 @@ if (!class_exists('organizersController')) {
                   </ul>
                 </div>
               </li>
+              <!--
               <li class="nav-item">
                 <a href="widgets.html">
                   <i class="fas fa-desktop"></i>
-                  <p>Widgets</p>
+                  <p></p>
                   <span class="badge badge-success">4</span>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="../../documentation/index.html">
                   <i class="fas fa-file"></i>
-                  <p>Documentation</p>
+                  <p></p>
                   <span class="badge badge-secondary">1</span>
                 </a>
               </li>
@@ -430,7 +436,7 @@ if (!class_exists('organizersController')) {
                   <i class="fas fa-bars"></i>
                   <p>Menu Levels</p>
                   <span class="caret"></span>
-                </a>
+                </a>-->
                 <div class="collapse" id="submenu">
                   <ul class="nav nav-collapse">
                     <li>
@@ -868,7 +874,7 @@ if (!class_exists('organizersController')) {
         <div class="container">
           <div class="page-inner">
             <div class="page-header">
-              <h4 class="page-title">Manage users</h4>
+              <h4 class="page-title">Manage Organizers</h4>
               <ul class="breadcrumbs">
                 <li class="nav-home">
                   <a href="#">
@@ -878,21 +884,16 @@ if (!class_exists('organizersController')) {
                 <li class="separator">
                   <i class="icon-arrow-right"></i>
                 </li>
-                <li class="nav-item">
-                  <a href="#">Pages</a>
-                </li>
+               
                 <li class="separator">
                   <i class="icon-arrow-right"></i>
                 </li>
-                <li class="nav-item">
-                  <a href="#">Starter Page</a>
-                </li>
+               
               </ul>
             </div>
 
           <div class="page-category">Inner page content goes here</div>
-          
-        LEHNE ZID CRUD USERS
+
         <div class="container mt-5">
     <h2 class="mb-4">Add Organizer</h2>
     <form id="addOrganizerForm" action="organizer.php" method="post">
@@ -928,14 +929,14 @@ if (!class_exists('organizersController')) {
 
             // Formulaire d'édition caché par défaut
             echo "<form action='organizer.php' method='post' class='edit-form' id='editForm-" . $organizer['Organizer_id'] . "' style='display: none; margin-top: 10px;'>";
-            echo "<input type='hidden' name='organizer_id' value='" . htmlspecialchars($organizer['Organizer_id']) . "'>";
+            echo "<input type='hidden' name='organizer_id1' value='" . htmlspecialchars($organizer['Organizer_id']) . "'>";
             echo "<div class='mb-3'>";
             echo "<label for='organizerName'>Name</label>";
-            echo "<input type='text' class='form-control' name='organizer_name' id='name-" . $organizer['Organizer_id'] . "' required>";
+            echo "<input type='text' class='form-control' name='organizer_name1' id='name-" . $organizer['Organizer_id'] . "' required>";
             echo "</div>";
             echo "<div class='mb-3'>";
             echo "<label for='organizerEmail'>Email</label>";
-            echo "<input type='email' class='form-control' name='organizer_email' id='email-" . $organizer['Organizer_id'] . "' required>";
+            echo "<input type='email' class='form-control' name='organizer_email1' id='email-" . $organizer['Organizer_id'] . "' required>";
             echo "</div>";
             echo "<button type='submit' class='btn btn-primary'>Update</button>";
             echo "</form>";

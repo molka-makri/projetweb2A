@@ -244,7 +244,7 @@ class organizersController {
     }
 
     // Update an organizer
-   /* public function updatorganizer($organizer) {
+    public function updatorganizer($organizer) {
         $sql = "UPDATE organizers SET 
                     Organizer_name = COALESCE(:Organizer_name, Organizer_name),
                     Organizer_email = COALESCE(:Organizer_email, Organizer_email)
@@ -269,35 +269,24 @@ class organizersController {
             error_log("Error updating organizer: " . $e->getMessage());
             return "Error updating organizer.";
         }
-    }*/
-    public function updateAndReplaceOrganizer($organizer) {
-        $db = config::getConnexion();
-    
-        try {
-            // 1. Delete the previous organizer from the database
-            $deleteSql = "DELETE FROM organizers WHERE Organizer_id = :Organizer_id";
-            $deleteQuery = $db->prepare($deleteSql);
-            $deleteQuery->execute(['Organizer_id' => $organizer->getOrganizer_id()]);
-    
-            // 2. Insert the new organizer
-            $insertSql = "INSERT INTO organizers (Organizer_id, Organizer_name, Organizer_email)
-                          VALUES (:Organizer_id, :Organizer_name, :Organizer_email)";
-            $insertQuery = $db->prepare($insertSql);
-            $insertQuery->execute([
-                'Organizer_id' => $organizer->getOrganizer_id(),
-                'Organizer_name' => $organizer->getOrganizer_name(),
-                'Organizer_email' => $organizer->getOrganizer_email()
-            ]);
-    
-            // If both queries were successful, redirect or return a success message
-            header('Location: organizer.php?success=1');
-            exit; // Ensure no code runs after the redirection
-    
-        } catch (Exception $e) {
-            // Handle errors (e.g., if any query fails)
-            echo "Error: " . $e->getMessage();
-        }
     }
+        public function updatorganizer1($updatedOrganizer) {
+            // Assume $db is your database connection
+            $db = config::getConnexion();
+    
+            // Prepare the SQL query to update the organizer
+            $query = "UPDATE organizers SET Organizer_name = :name, Organizer_email = :email WHERE Organizer_id = :id";
+            $stmt = $db->prepare($query);
+    
+            // Bind the values
+            $stmt->bindParam(':name', $updatedOrganizer->getOrganizer_name());
+            $stmt->bindParam(':email', $updatedOrganizer->getOrganizer_email());
+            $stmt->bindParam(':id', $updatedOrganizer->getOrganizer_id());
+    
+            // Execute the query
+            $stmt->execute();
+        }
+    
     
     
     

@@ -1,7 +1,7 @@
 <?php
 include(__DIR__ . '/../Model/eventModel.php');
 
-include "../../../vendor/autoload.php"; 
+include (__DIR__ . "/../vendor/autoload.php"); 
 //../../../../../vendor/autoload.php; // Use autoloader
 
 use PHPMailer\PHPMailer\PHPMailer;

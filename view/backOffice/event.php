@@ -39,9 +39,9 @@ include '../../Controller/eventController.php'; // Include the event controller
   }
   
  // Update an event
-if (isset($_POST['event_name1'], $_POST['event_description1'], $_POST['event_date1'], $_POST['event_location1'], $_POST['event_id'], $_POST['Event_organizer1'])) {
+if (isset($_POST['event_name1'], $_POST['event_description1'], $_POST['event_date1'], $_POST['event_location1'], $_POST['event_id1'], $_POST['event_organizer1'])) {
   // Ensure at least one field is filled in
-  if (!empty($_POST['event_name1']) && !empty($_POST['event_description1']) && !empty($_POST['event_date1']) && !empty($_POST['event_location1']) && !empty($_POST['Event_organizer1'])) {
+  if (!empty($_POST['event_name1']) && !empty($_POST['event_description1']) && !empty($_POST['event_date1']) && !empty($_POST['event_location1']) && !empty($_POST['event_organizer1'])) {
 
       // Initialize event_date as DateTime or null
       $eventDate = !empty($_POST['event_date1']) ? new DateTime($_POST['event_date1']) : null;
@@ -53,7 +53,7 @@ if (isset($_POST['event_name1'], $_POST['event_description1'], $_POST['event_dat
           $_POST['event_description1'],
           $eventDate, // DateTime object or null
           $_POST['event_location1'],
-          $_POST['Event_organizer1']
+          $_POST['event_organizer1']
       );
 
       // Call the controller to update the event
@@ -913,29 +913,51 @@ if (isset($_POST['event_name1'], $_POST['event_description1'], $_POST['event_dat
 
             // Edit Button
            // Edit button for the event
-echo "<button class='btn btn-secondary btn-edit' onclick=\"showEditForm('" . $event['Event_id'] . "', '" . addslashes($event['Event_name']) . "', '" . addslashes($event['Event_description']) . "', '" . $event['Event_date'] . "', '" . addslashes($event['Event_location']) . "')\">Edit</button>";
+           echo "<button class='btn btn-secondary btn-edit' onclick=\"showEditForm(
+            '" . addslashes($event['Event_id']) . "', 
+            '" . addslashes($event['Event_name']) . "', 
+            '" . addslashes($event['Event_description']) . "', 
+            '" . addslashes($event['Event_date']) . "', 
+            '" . addslashes($event['Event_location']) . "', 
+            '" . addslashes($event['Event_organizer']) . "')\">Edit</button>";
+        
 
 // Edit Form (hidden by default)
-              echo "<form action='event.php' method='post' class='edit-form' id='editForm-" . $event['Event_id'] . "' style='display: none; margin-top: 10px;'>";
-              echo "<input type='hidden' name='event_id1' value='" . htmlspecialchars($event['Event_id']) . "'>";
-              echo "<div class='mb-3'>";
-              echo "<label for='eventName'>Event Name</label>";
-              echo "<input type='text' class='form-control' name='event_name1' id='name-" . $event['Event_id'] . "' value='" . htmlspecialchars($event['Event_name']) . "' required>";
-              echo "</div>";
-              echo "<div class='mb-3'>";
-              echo "<label for='eventDescription'>Event Description</label>";
-              echo "<textarea class='form-control' name='event_description1' id='description-" . $event['Event_id'] . "' required>" . htmlspecialchars($event['Event_description']) . "</textarea>";
-              echo "</div>";
-              echo "<div class='mb-3'>";
-              echo "<label for='eventDate'>Event Date</label>";
-              echo "<input type='date' class='form-control' name='event_date1' id='date-" . $event['Event_id'] . "' value='" . htmlspecialchars($event['Event_date']) . "' required>";
-              echo "</div>";
-              echo "<div class='mb-3'>";
-              echo "<label for='eventLocation'>Event Location</label>";
-              echo "<input type='text' class='form-control' name='event_location1' id='location-" . $event['Event_id'] . "' value='" . htmlspecialchars($event['Event_location']) . "' required>";
-              echo "</div>";
-              echo "<button type='submit' class='btn btn-primary'>Update Event</button>";
-              echo "</form>";
+echo "<form action='event.php' method='post' class='edit-form' id='editForm-" . htmlspecialchars($event['Event_id']) . "' style='display: none; margin-top: 10px;'>";
+echo "<input type='hidden' name='event_id1' value='" . htmlspecialchars($event['Event_id']) . "'>";
+
+// Event Name
+echo "<div class='mb-3'>";
+echo "<label for='eventName'>Event Name</label>";
+echo "<input type='text' class='form-control' name='event_name1' id='name-" . htmlspecialchars($event['Event_id']) . "' value='" . htmlspecialchars($event['Event_name']) . "' required>";
+echo "</div>";
+
+// Event Description
+echo "<div class='mb-3'>";
+echo "<label for='eventDescription'>Event Description</label>";
+echo "<textarea class='form-control' name='event_description1' id='description-" . htmlspecialchars($event['Event_id']) . "' required>" . htmlspecialchars($event['Event_description']) . "</textarea>";
+echo "</div>";
+
+// Event Date
+echo "<div class='mb-3'>";
+echo "<label for='eventDate'>Event Date</label>";
+echo "<input type='date' class='form-control' name='event_date1' id='date-" . htmlspecialchars($event['Event_id']) . "' value='" . htmlspecialchars($event['Event_date']) . "' required>";
+echo "</div>";
+
+// Event Location
+echo "<div class='mb-3'>";
+echo "<label for='eventLocation'>Event Location</label>";
+echo "<input type='text' class='form-control' name='event_location1' id='location-" . htmlspecialchars($event['Event_id']) . "' value='" . htmlspecialchars($event['Event_location']) . "' required>";
+echo "</div>";
+
+// Event Organizer (Corrected placement)
+echo "<div class='mb-3'>";
+echo "<label for='eventOrganizer'>Event Organizer</label>";
+echo "<input type='text' class='form-control' name='event_organizer1' id='organizer-" . htmlspecialchars($event['Event_id']) . "' value='" . htmlspecialchars($event['Event_organizer']) . "' required>";
+echo "</div>";
+
+echo "<button type='submit' class='btn btn-primary'>Update Event</button>";
+echo "</form>";
 
             // Delete Form
             echo "<form action='event.php' method='post' onsubmit=\"return confirm('Are you sure you want to delete this event?');\">";
@@ -962,6 +984,7 @@ function showEditForm(id, name, description, date, location) {
         document.getElementById(`description-${id}`).value = description;
         document.getElementById(`date-${id}`).value = date;
         document.getElementById(`location-${id}`).value = location;
+        document.getElementById(`organizer-${id}`).value = organizer;
     } else {
         form.style.display = "none";
     }
@@ -969,31 +992,7 @@ function showEditForm(id, name, description, date, location) {
 </script>
 
 ____________________________________________________________________________________________________________________  
-<footer class="footer">
-    <div class="container-fluid d-flex justify-content-between">
-        <nav class="pull-left">
-            <ul class="nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">ThemeKita</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Help</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Licenses</a>
-                </li>
-            </ul>
-        </nav>
-        <div class="copyright">
-            2024, made with <i class="fa fa-heart heart text-danger"></i> by
-            <a href="#">ThemeKita</a>
-        </div>
-        <div>
-            Distributed by
-            <a target="_blank" href="#">ThemeWagon</a>.
-        </div>
-    </div>
-</footer>
+
 
         
         
@@ -1001,35 +1000,7 @@ ________________________________________________________________________________
         </div>
         </div>
 
-        <footer class="footer">
-          <div class="container-fluid d-flex justify-content-between">
-            <nav class="pull-left">
-              <ul class="nav">
-                <li class="nav-item">
-                  <a class="nav-link" href="http://www.themekita.com">
-                    ThemeKita
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#"> Help </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#"> Licenses </a>
-                </li>
-              </ul>
-            </nav>
-            <div class="copyright">
-              2024, made with <i class="fa fa-heart heart text-danger"></i> by
-              <a href="http://www.themekita.com">ThemeKita</a>
-            </div>
-            <div>
-              Distributed by
-              <a target="_blank" href="https://themewagon.com/">ThemeWagon</a>.
-            </div>
-          </div>
-        </footer>
-      </div>
-    </div>
+       
     <!--   Core JS Files   -->
     <script src="assets/js/core/jquery-3.7.1.min.js"></script>
     <script src="assets/js/core/popper.min.js"></script>

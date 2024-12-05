@@ -240,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rating'], $_POST['revi
           
           <div class="col-sm-4 col-lg-3 text-center text-sm-start">
             <div class="main-logo">
-              <a href="index.html">
+              <a href="productPage.php">
                 <img src="images/logo.png" alt="logo" class="img-fluid">
               </a>
             </div>
@@ -320,12 +320,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rating'], $_POST['revi
 
                 <div class="offcanvas-body">
               
-                  <select class="filter-categories border-0 mb-0 me-5">
+                  <!-- <select class="filter-categories border-0 mb-0 me-5">
                     <option>Shop by Departments</option>
                     <option>Groceries</option>
                     <option>Drinks</option>
                     <option>Chocolates</option>
-                  </select>
+                  </select> -->
               
                   <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex gap-md-3 mb-0">
                     <li class="nav-item active">
@@ -407,46 +407,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rating'], $_POST['revi
 
             <!-- Display reviews -->
             <?php if (count($reviews) > 0): ?>
-                <div class="reviews-list">
-                    <?php foreach ($reviews as $review): ?>
-                        <div class="review-item" style="border-bottom: 1px solid #ddd; padding: 15px 0;">
-                            <div class="review-rating">
-                                <strong>Rating: </strong>
-                                <span><?= str_repeat('⭐', $review['rating']) ?></span>
-                            </div>
-                            <div class="review-text">
-                                <p><?= nl2br(htmlspecialchars($review['review_text'])) ?></p>
-                            </div>
-                            <div class="review-date">
-                                <small>Posted on <?= date('F j, Y', strtotime($review['created_at'])) ?></small>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+    <div class="reviews-list container p-4 border rounded shadow-sm bg-light">
+        <?php foreach ($reviews as $review): ?>
+            <div class="review-item mb-3 pb-3 border-bottom">
+                <div class="review-rating mb-2">
+                    <strong class="text-dark">Rating: </strong>
+                    <span class="text-warning"><?= str_repeat('⭐', $review['rating']) ?></span>
                 </div>
-            <?php else: ?>
-                <p>No reviews yet. Be the first to write a review!</p>
-            <?php endif; ?>
+                <div class="review-text mb-2">
+                    <p class="mb-0"><?= nl2br(htmlspecialchars($review['review_text'])) ?></p>
+                </div>
+                <div class="review-date text-muted">
+                    <small>Posted on <?= date('F j, Y', strtotime($review['created_at'])) ?></small>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php else: ?>
+    <div class="container p-4 border rounded shadow-sm bg-light text-center">
+        <p class="mb-0 text-muted">No reviews yet. Be the first to write a review!</p>
+    </div>
+<?php endif; ?>
 
             <!-- Review submission form -->
-            <h3>Write a Review</h3>
-            <form action="productDetails.php?id=<?= $productId ?>" method="POST" class="review-form">
-                <input type="hidden" name="product_id" value="<?= $productId ?>">
-                <label for="rating">Rating:</label>
-                <select name="rating" id="rating" required>
-                    <option value="1">1 Star</option>
-                    <option value="2">2 Stars</option>
-                    <option value="3">3 Stars</option>
-                    <option value="4">4 Stars</option>
-                    <option value="5">5 Stars</option>
-                </select>
+            <form action="productDetails.php?id=<?= $productId ?>" method="POST" class="review-form container p-3 border rounded shadow bg-light">
+    <div class="row g-3 align-items-center">
+        <!-- Rating Field -->
+        <div class="col-md-4">
+            <label for="rating" class="form-label">Rating:</label>
+            <select name="rating" id="rating" class="form-select" required>
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+            </select>
+        </div>
 
-                <label for="review_text">Review:</label>
-                <textarea name="review_text" id="review_text" rows="5" required></textarea>
+        <!-- Review Textarea -->
+        <div class="col-md-6">
+            <label for="review_text" class="form-label">Review:</label>
+            <textarea name="review_text" id="review_text" class="form-control" rows="1" required></textarea>
+        </div>
 
-                <button type="submit" class="btn-submit-review" style="background-color: #ff6600; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                    Submit Review
-                </button>
-            </form>
+        <!-- Submit Button -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-warning w-100">Submit</button>
+        </div>
+    </div>
+</form>
+
+
         </div>
     </section>
 

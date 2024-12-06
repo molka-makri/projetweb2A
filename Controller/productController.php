@@ -28,6 +28,20 @@ class productController {
         }
     }
 
+
+    
+        public function getAllProducts() {
+                    $sql = " SELECT * FROM products";
+            $db = config::getConnexion();
+    
+            try {
+                $list = $db->query($sql);
+                return $list;
+            } catch(Exception $err) {
+                echo $err->getMessage();
+            }
+        }
+
     public function addProduct($Product) {
         $sql = "INSERT INTO products VALUES (NULL, :Product_name, :Product_description, :Product_price, :Product_categorie, :Product_img)";
         $db = config::getConnexion();

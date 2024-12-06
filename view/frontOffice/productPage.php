@@ -1,14 +1,10 @@
 <?php
 // Include the file with your controller class and ensure it's instantiated
- // Include the database config
 require_once '../../controller/productCategoryController.php'; // Include the category controller
 require_once "../../controller/productController.php";
 
-    // Create an instance of productController
-    $productController = new productController();
-
-    // Get all products from the database
-    $products = $productController->getProducts();
+$productController = new productController();
+$products = $productController->getAllProducts();
 
 $categoryController = new productCategoryController(); // Instantiate your controller
 $categories = $categoryController->getCategories(); // Fetch categories from the database
@@ -570,79 +566,77 @@ $categories = $categoryController->getCategories(); // Fetch categories from the
           <div class="col-md-12">
 
             <div class="bootstrap-tabs product-tabs">
-              <div class="tabs-header d-flex justify-content-between border-bottom my-5">
+            <div class="tabs-header d-flex justify-content-between border-bottom my-5">
                 <h3>Trending Products</h3>
                 <nav>
-                  <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                      <<?php foreach ($categories as $index => $category): ?>
-                  <a href="#"
-                    class="nav-link text-uppercase fs-6 <?= $index === 0 ? 'active' : '' ?>"
-                    id="nav-<?= htmlspecialchars($category['category_id']) ?>-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#nav-<?= htmlspecialchars($category['category_id']) ?>">
-                      <?= htmlspecialchars($category['category']) ?>
-                  </a>
-                       <?php endforeach; ?>
-                  </div>
+                  
+                    <div class="nav nav-tabs" id="product-category-tabs" role="tablist">
+                        <?php foreach ($categories as $index => $category): ?>
+                            <a href="#" class="nav-link text-uppercase fs-6 <?= $index === 0 ? 'active' : '' ?>"
+                              id="nav-<?= htmlspecialchars($category['category_id']) ?>-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#nav-<?= htmlspecialchars($category['category_id']) ?>"
+                              data-category-id="<?= htmlspecialchars($category['category_id']) ?>">
+                                <?= htmlspecialchars($category['category']) ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
                 </nav>
-              </div>
+            </div>
               <div class="tab-content" id="nav-tabContent">
               <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
 
-<div class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-    <?php
-  require_once "../../controller/productController.php";
-
-    // Create an instance of productController
-    $productController = new productController();
-
-    // Get all products from the database
-    $products = $productController->getProducts();
-
-    // Check if there are products
-    if ($products && $products->rowCount() > 0) {
-        while ($product = $products->fetch(PDO::FETCH_ASSOC)) {
-            
-            echo "<div class='col'>"; // Each product is wrapped in a col
-            echo "<div class='product-item'>";
-            echo "<a href='#' class='btn-wishlist'><svg width='24' height='24'><use xlink:href='#heart'></use></svg></a>";
-            echo "<figure>";
-            echo "<a href='#' title='" . htmlspecialchars($product['Product_name']) . "'>";
-            echo "<img src='" . htmlspecialchars($product['Product_img']) . "' class='tab-image' style='height: 200px; object-fit: cover;' alt='Product Image'>";
-            echo "</a>";
-            echo "</figure>";
-            echo "<h3>" . htmlspecialchars($product['Product_name']) . "</h3>";
-            echo "<span class='qty'>1 Unit</span>";
-            echo "<span class='rating'><svg width='24' height='24' class='text-primary'><use xlink:href='#star-solid'></use></svg> 4.5</span>";
-            echo "<span class='price'>$" . htmlspecialchars($product['Product_price']) . "</span>";
-            echo "<div class='d-flex align-items-center justify-content-between'>";
-            echo "<div class='input-group product-qty'>";
-            echo "<span class='input-group-btn'>";
-            echo "<button type='button' class='quantity-left-minus btn btn-danger btn-number' data-type='minus'>";
-            echo "<svg width='16' height='16'><use xlink:href='#minus'></use></svg>";
-            echo "</button>";
-            echo "</span>";
-            echo "<input type='text' id='quantity' name='quantity' class='form-control input-number' value='1'>";
-            echo "<span class='input-group-btn'>";
-            echo "<button type='button' class='quantity-right-plus btn btn-success btn-number' data-type='plus'>";
-            echo "<svg width='16' height='16'><use xlink:href='#plus'></use></svg>";
-            echo "</button>";
-            echo "</span>";
-            echo "</div>";
-            echo "<a href='productDetails.php?id=" . htmlspecialchars($product['Product_id']) . "' class='nav-link'> details <iconify-icon icon='uil:shopping-cart'></iconify-icon></a>";
-            echo "</div>";
-            echo "</div>";
-            echo "</div>"; // End of product col
-            
-        }
-    } else {
-        echo "<p>No products found.</p>";
-    }
-    ?>
+          <!-- Products section -->
+          <div id="products-container" class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+    <?php if ($products && $products->rowCount() > 0): ?>
+        <?php while ($product = $products->fetch(PDO::FETCH_ASSOC)): ?>
+            <div class="col product" data-category-id="<?= htmlspecialchars($product['Product_categorie']) ?>">
+                <div class="product-item">
+                    <a href="#" class="btn-wishlist">
+                        <svg width="24" height="24"><use xlink:href="#heart"></use></svg>
+                    </a>
+                    <figure>
+                        <a href="#" title="<?= htmlspecialchars($product['Product_name']) ?>">
+                            <img src="<?= htmlspecialchars($product['Product_img']) ?>" 
+                                 class="tab-image" 
+                                 style="height: 200px; object-fit: cover;" 
+                                 alt="Product Image">
+                        </a>
+                    </figure>
+                    <h3><?= htmlspecialchars($product['Product_name']) ?></h3>
+                    <span class="qty">1 Unit</span>
+                    <span class="rating">
+                        <svg width="24" height="24" class="text-primary"><use xlink:href="#star-solid"></use></svg> 4.5
+                    </span>
+                    <span class="price">$<?= htmlspecialchars($product['Product_price']) ?></span>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="input-group product-qty">
+                            <span class="input-group-btn">
+                                <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus">
+                                    <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
+                                </button>
+                            </span>
+                            <input type="text" id="quantity" name="quantity" class="form-control input-number" value="1">
+                            <span class="input-group-btn">
+                                <button type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus">
+                                    <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
+                                </button>
+                            </span>
+                        </div>
+                        <a href="productDetails.php?id=<?= htmlspecialchars($product['Product_id']) ?>" class="nav-link">
+                            details <iconify-icon icon="uil:shopping-cart"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <p>No products found.</p>
+    <?php endif; ?>
 </div>
-<!-- / product-grid -->
 
-</div>
+
+        </div>
 
 
                 <div class="tab-pane fade" id="nav-fruits" role="tabpanel" aria-labelledby="nav-fruits-tab">
@@ -2237,6 +2231,57 @@ $categories = $categoryController->getCategories(); // Fetch categories from the
         </div>
       </div>
     </div>
+
+
+
+        <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    // Select the category navigation links and products container
+    const categoryLinks = document.querySelectorAll('.nav-tabs .nav-link');
+    const productsContainer = document.querySelector('#products-container');
+    const products = productsContainer.querySelectorAll('.product');
+
+    // Function to show products based on category ID
+    const filterProducts = (categoryId) => {
+        products.forEach((product) => {
+            const productCategoryId = product.getAttribute('data-category-id');
+            console.log(categoryId)
+            console.log(productCategoryId)
+            // Show or hide products based on the selected category
+            if (categoryId === 'all' || productCategoryId === categoryId) {
+                product.style.display = 'block'; // Make product visible
+            } else {
+                product.style.display = 'none'; // Hide product
+            }
+        });
+    };
+
+    // Event listener for category clicks
+    categoryLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent default link behavior
+
+            // Get the selected category ID
+            const selectedCategoryId = link.getAttribute('data-category-id') || 'all';
+
+            // Update the active link
+            categoryLinks.forEach((link) => link.classList.remove('active'));
+            link.classList.add('active');
+
+            // Filter products
+            filterProducts(selectedCategoryId);
+        });
+    });
+
+    // Show all products by default on page load
+    filterProducts('all');
+});
+
+
+
+    </script>
+
+
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>

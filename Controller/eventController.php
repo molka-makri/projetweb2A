@@ -19,6 +19,7 @@ class eventsController {
             return $list;
         } catch(Exception $err) {
             echo $err->getMessage();
+            return [];
         }
     }
 
@@ -174,11 +175,15 @@ public function addEvent($event) {
                 $mail->isHTML(true);                                          // Set email format to HTML
                 $mail->Subject = 'Thank You for Participating in the Event';
                 $mail->Body    = "Thank you for participating in the event. We will send you more details soon.";
+                
 
                 // Send the email
                 $mail->send();
-
-                echo "<div style='font-size: 24px; font-weight: bold; color: green; text-align: center;'>Thank you for your participation! A confirmation email has been sent.</div>";
+                echo '<div style="font-size: 24px; font-weight: bold; color: green; text-align: center;">';
+                echo 'Thank you for your participation! A confirmation email has been sent.';
+                echo '<div style="display: flex; justify-content: center; align-items: center; height: 10vh;">';
+echo '<img src="http://www.coin-operated.com/wp-content/uploads/2010/05/mail.gif" alt="Mail GIF" style="max-width: 100%; height: auto;">';
+echo '</div>';
             } catch (Exception $e) {
                 echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
             }
@@ -193,19 +198,18 @@ public function addEvent($event) {
     }
     
 }
+    
 
+
+
+ 
         
         
         
         
 
     }
-        
-   
      
-    
-
-    
 
 class organizersController {
     // Fetch all organizers

@@ -2,8 +2,25 @@
 
 include '../../../Controller/eventController.php';
 
+// Fetch events from the database
+$eventController = new eventsController();
+$events = $eventController->getEvents();
 
+$eventDates = [];
+if ($events && $events->rowCount() > 0) {
+    while ($event = $events->fetch(PDO::FETCH_ASSOC)) {
+        // Format event date as YYYY-MM-DD
+        $eventDates[] = date('Y-m-d', strtotime($event['Event_date']));
+    }
+}
 ?>
+
+<!-- Pass the event dates to JavaScript -->
+<script>
+  var eventDates = <?php echo json_encode($eventDates); ?>;
+</script>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,8 +32,8 @@ include '../../../Controller/eventController.php';
   <meta content="" name="description">
 
   <!-- Favicons -->
-  <link href="img/favicon.png" rel="icon">
-  <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="img/favicon.ico" rel="icon">
+  <link href="img/favicon.ico" type="img/x-icon" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Raleway:300,400,500,700,800" rel="stylesheet">
@@ -59,6 +76,100 @@ include '../../../Controller/eventController.php';
             background-color: #45a049;
         }
   </style>
+  <style>
+    /* General calendar styling */
+    .hb-calendar {
+        font-family: Arial, sans-serif;
+        width: 100%;
+        max-width: 600px;
+        margin: 20px auto;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+
+
+    /* Month navigation styling */
+    .hb-months {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .hb-months a {
+        text-decoration: none;
+        color:  #4CAF50;
+        font-weight: bold;
+    }
+
+    .hb-months a:hover {
+        text-decoration: underline;
+    }
+
+    .hb-current-month {
+        color: #333;
+        font-size: 18px;
+        text-align: center;
+        flex-grow: 2;
+    }
+
+    /* Days of the week */
+    .hb-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        padding: 10px;
+        background-color: #fff;
+    }
+
+    .hb-day-name {
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    /* Individual days */
+    .hb-day {
+        padding: 10px;
+        margin: 2px;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .hb-day:hover {
+        background-color: #e0e0e0;
+    }
+
+    .hb-day.highlight {
+        background-color: #FFD700;
+        color: #000;
+        font-weight: bold;
+    }
+
+    /* Empty cells */
+    .hb-day:not([class*="hb-day-name"]):empty {
+        cursor: default;
+        background: none;
+    }
+
+    /* Arrows */
+    .hb-change-month {
+        font-size: 20px;
+        z-index: 1;
+        cursor: pointer;
+    }
+
+    .hb-change-month:hover {
+        color: #0056b3; /* Darker blue on hover */
+    }
+</style>
 </head>
 
 <body>
@@ -82,10 +193,11 @@ include '../../../Controller/eventController.php';
           <li><a href="#about" class="about-title">About our Events</a></li>
           <li><a href="#speakers" class="organizers-title">organizers</a></li>
           <li><a href="#events" class="program-title">Schedule</a></li>
-          <li><a href="#venue" class="venue-title">Venue</a></li>
+          <li><a href="#calendar" class="calendar-title" >calendar</a></li>
+          
           
           <li><a href="#gallery" class="gallery-title">Gallery</a></li>
-          <li><a href="#supporters" class="sponsor-title" >Sponsors</a></li>
+          
           <li><a href="#contact" class="contact-title">Contact</a></li>
           
         </ul>
@@ -228,104 +340,163 @@ include '../../../Controller/eventController.php';
   </div>
 </section>
 
- <!--==========================
-      Venue Section
+
+
+<!--==========================
+      calendrier Section
     ============================-->
-    <section id="venue" class="wow fadeInUp">
+    <br>
+<br>
+<section id="calendar" class="wow fadeInUp">
+  <div class="hb-calendar">
+    <div class="hb-months">
+      <a href="javascript:;" class="hb-change-month hb-prev-month" data-month="12" data-year="2024">&#9664;</a>
+      <a href="javascript:;" class="hb-current-month" data-month="12" data-year="2024">
+          December <span id="current-year">2024</span>
+      </a>
+      <a href="javascript:;" class="hb-change-month hb-next-month" data-month="1" data-year="2025">&#9654;</a>
+    </div>
 
-      <div class="container-fluid">
+    <div class="hb-days">
+      <span class="hb-day hb-day-name">Mon</span>
+      <span class="hb-day hb-day-name">Tue</span>
+      <span class="hb-day hb-day-name">Wed</span>
+      <span class="hb-day hb-day-name">Thu</span>
+      <span class="hb-day hb-day-name">Fri</span>
+      <span class="hb-day hb-day-name">Sat</span>
+      <span class="hb-day hb-day-name">Sun</span>
+      <!-- Day cells will be inserted dynamically here -->
+    </div>
+  </div>
 
-        <div class="section-header">
-          <h2>Event Venue</h2>
-          <p>Event venue location info and gallery</p>
-        </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const prevButton = document.querySelector('.hb-prev-month');
+      const nextButton = document.querySelector('.hb-next-month');
+      const monthDisplay = document.querySelector('.hb-current-month');
+      const yearDisplay = document.querySelector('#current-year');
+      const daysContainer = document.querySelector('.hb-days');
 
-        <div class="row no-gutters">
-          <div class="col-lg-6 venue-map">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621" frameborder="0" style="border:0" allowfullscreen></iframe>
-          </div>
+      let currentMonth = 12; // Start with December 2024
+      let currentYear = 2024;
 
-          <div class="col-lg-6 venue-info">
-            <div class="row justify-content-center">
-              <div class="col-11 col-lg-8">
-                <h3>Downtown Conference Center, New York</h3>
-                <p>Iste nobis eum sapiente sunt enim dolores labore accusantium autem. Cumque beatae ipsam. Est quae sit qui voluptatem corporis velit. Qui maxime accusamus possimus. Consequatur sequi et ea suscipit enim nesciunt quia velit.</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      // PHP: Fetch event dates from the database
+      // Assuming eventDates is fetched and passed from PHP as a JSON-encoded array
+      const eventDates = <?php echo json_encode($eventDates); ?>;
 
-      </div>
+      // Function to generate the days for the current month
+      function generateDays(month, year) {
+        // Clear previous day cells
+        daysContainer.innerHTML = `
+          <span class="hb-day hb-day-name">Mon</span>
+          <span class="hb-day hb-day-name">Tue</span>
+          <span class="hb-day hb-day-name">Wed</span>
+          <span class="hb-day hb-day-name">Thu</span>
+          <span class="hb-day hb-day-name">Fri</span>
+          <span class="hb-day hb-day-name">Sat</span>
+          <span class="hb-day hb-day-name">Sun</span>
+        `;
 
-      <div class="container-fluid venue-gallery-container">
-        <div class="row no-gutters">
+        // Calculate the first day of the month (0 = Sunday, 1 = Monday, etc.)
+        const firstDay = new Date(year, month - 1, 1).getDay();
+        const daysInMonth = new Date(year, month, 0).getDate();
 
-          <div class="col-lg-3 col-md-4">
-            <div class="venue-gallery">
-              <a href="img/venue-gallery/1.jpg" class="venobox" data-gall="venue-gallery">
-                <img src="img/venue-gallery/1.jpg" alt="" class="img-fluid">
-              </a>
-            </div>
-          </div>
+        // Generate empty days for the days before the start of the month
+        for (let i = 0; i < firstDay; i++) {
+          const emptyDay = document.createElement('span');
+          emptyDay.classList.add('hb-day');
+          emptyDay.innerHTML = '&nbsp;';
+          daysContainer.appendChild(emptyDay);
+        }
 
-          <div class="col-lg-3 col-md-4">
-            <div class="venue-gallery">
-              <a href="img/venue-gallery/2.jpg" class="venobox" data-gall="venue-gallery">
-                <img src="img/venue-gallery/2.jpg" alt="" class="img-fluid">
-              </a>
-            </div>
-          </div>
+        // Generate the days of the month
+        for (let i = 1; i <= daysInMonth; i++) {
+          const day = document.createElement('span');
+          day.classList.add('hb-day');
+          day.textContent = i;
 
-          <div class="col-lg-3 col-md-4">
-            <div class="venue-gallery">
-              <a href="img/venue-gallery/3.jpg" class="venobox" data-gall="venue-gallery">
-                <img src="img/venue-gallery/3.jpg" alt="" class="img-fluid">
-              </a>
-            </div>
-          </div>
+          // Format the current date to match the event date format (YYYY-MM-DD)
+          const currentDate = `${year}-${String(month).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
 
-          <div class="col-lg-3 col-md-4">
-            <div class="venue-gallery">
-              <a href="img/venue-gallery/4.jpg" class="venobox" data-gall="venue-gallery">
-                <img src="img/venue-gallery/4.jpg" alt="" class="img-fluid">
-              </a>
-            </div>
-          </div>
+          // Highlight the day if it matches any event date
+          if (eventDates.includes(currentDate)) {
+            day.classList.add('highlight');
+          }
 
-          <div class="col-lg-3 col-md-4">
-            <div class="venue-gallery">
-              <a href="img/venue-gallery/5.jpg" class="venobox" data-gall="venue-gallery">
-                <img src="img/venue-gallery/5.jpg" alt="" class="img-fluid">
-              </a>
-            </div>
-          </div>
+          daysContainer.appendChild(day);
+        }
+      }
 
-          <div class="col-lg-3 col-md-4">
-            <div class="venue-gallery">
-              <a href="img/venue-gallery/6.jpg" class="venobox" data-gall="venue-gallery">
-                <img src="img/venue-gallery/6.jpg" alt="" class="img-fluid">
-              </a>
-            </div>
-          </div>
+      // Function to update the month and year display
+      function updateMonthDisplay() {
+        const monthNames = [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ];
 
-          <div class="col-lg-3 col-md-4">
-            <div class="venue-gallery">
-              <a href="img/venue-gallery/7.jpg" class="venobox" data-gall="venue-gallery">
-                <img src="img/venue-gallery/7.jpg" alt="" class="img-fluid">
-              </a>
-            </div>
-          </div>
+        // Update the month and year in the display
+        monthDisplay.firstChild.textContent = monthNames[currentMonth - 1];  // Set the correct month
+        yearDisplay.textContent = currentYear; // Set the year correctly
+      }
 
-          <div class="col-lg-3 col-md-4">
-            <div class="venue-gallery">
-              <a href="img/venue-gallery/8.jpg" class="venobox" data-gall="venue-gallery">
-                <img src="img/venue-gallery/8.jpg" alt="" class="img-fluid">
-              </a>
-            </div>
-          </div>
+      // Handle the "previous month" button click
+      prevButton.addEventListener('click', function() {
+        currentMonth--;
+        if (currentMonth < 1) {
+          currentMonth = 12;
+          currentYear--;
+        }
+        generateDays(currentMonth, currentYear);
+        updateMonthDisplay();
+      });
 
-        </div>
-      </div>
+      // Handle the "next month" button click
+      nextButton.addEventListener('click', function() {
+        currentMonth++;
+        if (currentMonth > 12) {
+          currentMonth = 1;
+          currentYear++;
+        }
+        generateDays(currentMonth, currentYear);
+        updateMonthDisplay();
+      });
+
+      // Initialize the calendar with December 2024
+      generateDays(currentMonth, currentYear);
+      updateMonthDisplay();
+    });
+  </script>
+</section>
+
+<style>
+  /* Highlight event dates */
+  .hb-day.highlight {
+    background-color: #6DBE45; /* Lush green background */
+    color: white; /* White text color */
+    font-weight: bold; /* Bold text */
+    border-radius: 50%; /* Rounded corners for a circular highlight */
+    padding: 8px; /* Adds some padding for a better visual effect */
+    box-shadow: 0 0 8px rgba(0, 128, 0, 0.5); /* Soft green shadow for depth */
+    background-image: linear-gradient(135deg, rgba(0, 128, 0, 0.7) 0%, rgba(107, 190, 69, 0.7) 100%); /* Light gradient */
+  }
+
+  /* Optional: Add a subtle texture for an organic feel */
+  .hb-day.highlight::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('https://www.transparenttextures.com/patterns/diagonal-stripes.png'); /* Organic diagonal stripes texture */
+    opacity: 0.15; /* Subtle texture */
+    border-radius: 50%; /* Rounded corners for texture effect */
+  }
+  
+</style>
+
+
+ 
     <!--==========================
       Gallery Section
     ============================-->
@@ -354,146 +525,7 @@ include '../../../Controller/eventController.php';
     <!--==========================
       Sponsors Section
     ============================-->
-    <section id="supporters" class="section-with-bg wow fadeInUp">
-
-      <div class="container">
-        <div class="section-header">
-          <h2>Sponsors</h2>
-        </div>
-
-        <div class="row no-gutters supporters-wrap clearfix">
-
-          <div class="col-lg-3 col-md-4 col-xs-6">
-            <div class="supporter-logo">
-              <img src="img/supporters/1.png" class="img-fluid" alt="">
-            </div>
-          </div>
-          
-          <div class="col-lg-3 col-md-4 col-xs-6">
-            <div class="supporter-logo">
-              <img src="img/supporters/2.png" class="img-fluid" alt="">
-            </div>
-          </div>
-        
-          <div class="col-lg-3 col-md-4 col-xs-6">
-            <div class="supporter-logo">
-              <img src="img/supporters/3.png" class="img-fluid" alt="">
-            </div>
-          </div>
-          
-          <div class="col-lg-3 col-md-4 col-xs-6">
-            <div class="supporter-logo">
-              <img src="img/supporters/4.png" class="img-fluid" alt="">
-            </div>
-          </div>
-          
-          <div class="col-lg-3 col-md-4 col-xs-6">
-            <div class="supporter-logo">
-              <img src="img/supporters/5.png" class="img-fluid" alt="">
-            </div>
-          </div>
-        
-          <div class="col-lg-3 col-md-4 col-xs-6">
-            <div class="supporter-logo">
-              <img src="img/supporters/6.png" class="img-fluid" alt="">
-            </div>
-          </div>
-          
-          <div class="col-lg-3 col-md-4 col-xs-6">
-            <div class="supporter-logo">
-              <img src="img/supporters/7.png" class="img-fluid" alt="">
-            </div>
-          </div>
-          
-          <div class="col-lg-3 col-md-4 col-xs-6">
-            <div class="supporter-logo">
-              <img src="img/supporters/8.png" class="img-fluid" alt="">
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!--==========================
-      F.A.Q Section
-    ============================-->
-    <section id="faq" class="wow fadeInUp">
-
-      <div class="container">
-
-        <div class="section-header">
-          <h2>F.A.Q </h2>
-        </div>
-
-        <div class="row justify-content-center">
-          <div class="col-lg-9">
-              <ul id="faq-list">
-
-                <li>
-                  <a data-toggle="collapse" class="collapsed" href="#faq1">Non consectetur a erat nam at lectus urna duis? <i class="fa fa-minus-circle"></i></a>
-                  <div id="faq1" class="collapse" data-parent="#faq-list">
-                    <p>
-                      Feugiat pretium nibh ipsum consequat. Tempus iaculis urna id volutpat lacus laoreet non curabitur gravida. Venenatis lectus magna fringilla urna porttitor rhoncus dolor purus non.
-                    </p>
-                  </div>
-                </li>
-      
-                <li>
-                  <a data-toggle="collapse" href="#faq2" class="collapsed">Feugiat scelerisque varius morbi enim nunc faucibus a pellentesque? <i class="fa fa-minus-circle"></i></a>
-                  <div id="faq2" class="collapse" data-parent="#faq-list">
-                    <p>
-                      Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim. Mauris ultrices eros in cursus turpis massa tincidunt dui.
-                    </p>
-                  </div>
-                </li>
-      
-                <li>
-                  <a data-toggle="collapse" href="#faq3" class="collapsed">Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi? <i class="fa fa-minus-circle"></i></a>
-                  <div id="faq3" class="collapse" data-parent="#faq-list">
-                    <p>
-                      Eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci. Faucibus pulvinar elementum integer enim. Sem nulla pharetra diam sit amet nisl suscipit. Rutrum tellus pellentesque eu tincidunt. Lectus urna duis convallis convallis tellus. Urna molestie at elementum eu facilisis sed odio morbi quis
-                    </p>
-                  </div>
-                </li>
-      
-                <li>
-                  <a data-toggle="collapse" href="#faq4" class="collapsed">Ac odio tempor orci dapibus. Aliquam eleifend mi in nulla? <i class="fa fa-minus-circle"></i></a>
-                  <div id="faq4" class="collapse" data-parent="#faq-list">
-                    <p>
-                      Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim. Mauris ultrices eros in cursus turpis massa tincidunt dui.
-                    </p>
-                  </div>
-                </li>
-      
-                <li>
-                  <a data-toggle="collapse" href="#faq5" class="collapsed">Tempus quam pellentesque nec nam aliquam sem et tortor consequat? <i class="fa fa-minus-circle"></i></a>
-                  <div id="faq5" class="collapse" data-parent="#faq-list">
-                    <p>
-                      Molestie a iaculis at erat pellentesque adipiscing commodo. Dignissim suspendisse in est ante in. Nunc vel risus commodo viverra maecenas accumsan. Sit amet nisl suscipit adipiscing bibendum est. Purus gravida quis blandit turpis cursus in
-                    </p>
-                  </div>
-                </li>
-      
-                <li>
-                  <a data-toggle="collapse" href="#faq6" class="collapsed">Tortor vitae purus faucibus ornare. Varius vel pharetra vel turpis nunc eget lorem dolor? <i class="fa fa-minus-circle"></i></a>
-                  <div id="faq6" class="collapse" data-parent="#faq-list">
-                    <p>
-                      Laoreet sit amet cursus sit amet dictum sit amet justo. Mauris vitae ultricies leo integer malesuada nunc vel. Tincidunt eget nullam non nisi est sit amet. Turpis nunc eget lorem dolor sed. Ut venenatis tellus in metus vulputate eu scelerisque. Pellentesque diam volutpat commodo sed egestas egestas fringilla phasellus faucibus. Nibh tellus molestie nunc non blandit massa enim nec.
-                    </p>
-                  </div>
-                </li>
-      
-              </ul>
-          </div>
-        </div>
-
-      </div>
-
-    </section>
-
+    
     
 
     <!--==========================

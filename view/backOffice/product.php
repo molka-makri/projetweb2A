@@ -1,12 +1,4 @@
-
-
-
-
-
 <?php
-
-
-
 include '../../Controller/productController.php'; 
 include (__DIR__ . '/../../Controller/productCategoryController.php'); 
 
@@ -14,6 +6,8 @@ $categoryController = new productCategoryController();
 $categories = $categoryController->getCategories();
 
 $productController = new productController();
+
+$products = $productController->getProducts();
 
 // Handling the form submission for product addition or updating
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -104,6 +98,44 @@ if (isset($_POST['delete_product_id'])) {
         echo "Invalid product ID.";
     }
 }
+
+// Check if a search query is submitted
+$searchQuery = isset($_GET['search']) ? $_GET['search'] : '';
+
+// Prepare the SQL query with a search filter
+$sql = "SELECT 
+            products.Product_id,
+            products.Product_img,
+            products.Product_name,
+            products.Product_description,
+            products.Product_price,
+            products_categories.category AS Product_categorie
+        FROM 
+            products
+        INNER JOIN 
+            products_categories 
+        ON 
+            products.Product_categorie = products_categories.category_id";
+
+if (!empty($searchQuery)) {
+    $sql .= " WHERE products.Product_name LIKE :search OR products.Product_description LIKE :search";
+}
+
+$db = config::getConnexion();
+$query = $db->prepare($sql);
+
+// Bind the search parameter if applicable
+if (!empty($searchQuery)) {
+  $query->bindValue(':search', '%' . $searchQuery . '%');
+}
+
+try {
+  $query->execute();
+  $products = $query;
+} catch (Exception $e) {
+  echo "Error: " . $e->getMessage();
+}
+
 
 ?>
 
@@ -894,42 +926,42 @@ if (isset($_POST['delete_product_id'])) {
 <div class="container mt-5">
         <!-- <h2 class="mb-4">Product List</h2> -->
         <!-- The PHP script will display the product list here -->
+         <!-- Search Form -->
+         <h2 class="mb-4">Product List</h2>
+    <form method="GET" class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" name="search" placeholder="Search products..." value="<?= htmlspecialchars($searchQuery) ?>">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
         
- <?php
+ 
 
-    // Create an instance of productController
-    $productController = new productController();
+    
 
-    // Get all products from the database
-    $products = $productController->getProducts();
+    
+    <!-- Product List -->
+    <div class='row'>
 
-    // Check if there are products
-    if ($products && $products->rowCount() > 0) {
-        echo "<div class='container mt-5'>";
-        echo "<h2 class='mb-4'>Product List</h2>";
-        echo "<div class='row'>"; // Bootstrap grid starts here
+        <?php if ($products && $products->rowCount() > 0): ?>
+            <?php while ($product = $products->fetch(PDO::FETCH_ASSOC)): ?>
+                <div class='col-md-4 mb-4'>
+                    <div class='card'>
+                        <img src='<?= htmlspecialchars($product['Product_img']) ?>' class='card-img-top' alt='Product Image' style='height: 200px; object-fit: cover;'>
+                        <div class='card-body'>
+                            <h5 class='card-title'><?= htmlspecialchars($product['Product_name']) ?></h5>
+                            <p class='card-text'><?= htmlspecialchars($product['Product_description']) ?></p>
+                            <p class='card-text'><strong>Price: $<?= htmlspecialchars($product['Product_price']) ?></strong></p>
+                            <p class='card-text'><small class='text-muted'>Category: <?= htmlspecialchars($product['Product_categorie']) ?></small></p>
+                        </div>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <p>No products found.</p>
+        <?php endif; ?>
+    </div>
 
-        // Loop through the products and display them as cards
-        while ($product = $products->fetch(PDO::FETCH_ASSOC)) {
-            echo "<div class='col-md-4 mb-4'>";
-            echo "<div class='card'>";
-            echo "<img src='" . htmlspecialchars($product['Product_img']) . "' class='card-img-top' alt='Product Image' style='height: 200px; object-fit: cover;'>";
-            echo "<div class='card-body'>";
-            echo "<h5 class='card-title'>" . htmlspecialchars($product['Product_name']) . "</h5>";
-            echo "<p class='card-text'>" . htmlspecialchars($product['Product_description']) . "</p>";
-            echo "<p class='card-text'><strong>Price: $" . htmlspecialchars($product['Product_price']) . "</strong></p>";
-            echo "<p class='card-text'><small class='text-muted'>Category: " . htmlspecialchars($product['Product_categorie']) . "</small></p>";
-            echo "</div>";
-            echo "</div>";
-            echo "</div>";
-        }
-
-        echo "</div>"; // Bootstrap grid ends here
-        echo "</div>";
-    } else {
-        echo "<p>No products found.</p>";
-    }
-?>
     
     
    

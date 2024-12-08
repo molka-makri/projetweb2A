@@ -303,6 +303,12 @@ if ($events && $events->rowCount() > 0) {
         </div>
       </div>
     </section>
+    <div id="weather-info" class="weather-container">
+  
+ 
+ 
+  
+</div>
     
 
 <script>

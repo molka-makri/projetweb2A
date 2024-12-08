@@ -20,8 +20,100 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 
-  </head>
+  
+    <style>
+      /* General Dark Mode Styles */
+      body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+      }
+      body.dark-mode a {
+        color: #bb86fc;
+      }
+      body.dark-mode .card, body.dark-mode .header, body.dark-mode .footer {
+        background-color: #1e1e1e;
+        color: #ffffff;
+      }
+
+      /* Toggle Switch Styles */
+      .switch {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 16px;
+      }
+      .switch input {
+        display: none;
+      }
+      .slider {
+        position: relative;
+        width: 34px;
+        height: 20px;
+        background-color: #ccc;
+        border-radius: 34px;
+        cursor: pointer;
+        transition: 0.4s;
+      }
+      .slider:before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        background-color: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: 0.4s;
+      }
+      input:checked + .slider {
+        background-color: #4caf50;
+      }
+      input:checked + .slider:before {
+        transform: translateX(14px);
+      }
+    </style>
+    <script>
+      function toggleDarkMode(event) {
+        const body = document.body;
+        body.classList.toggle('dark-mode', event.target.checked);
+        const isDarkMode = body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+      }
+
+      // Check for saved user preference on page load
+      window.onload = function() {
+        const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
+        document.body.classList.toggle('dark-mode', isDarkMode);
+        const toggle = document.getElementById('darkModeToggle');
+        if (toggle) toggle.checked = isDarkMode;
+      }
+    </script>
+
+<style>
+  .switch {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+</style>
+
+</head>
   <body>
+
+<div style="position: absolute; 500: 20px; right: 20px;">
+  <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(event)">
+  <label for="darkModeToggle">🌙</label>
+</div>
+
+    
+
 
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
       <defs>
@@ -73,10 +165,10 @@
       </defs>
     </svg>
 
-    <div class="preloader-wrapper">
+    <!-- <div class="preloader-wrapper">
       <div class="preloader">
       </div>
-    </div>
+    </div> -->
 
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart" aria-labelledby="My Cart">
       <div class="offcanvas-header justify-content-center">
@@ -2233,29 +2325,160 @@
           </div>
         </div>
       </div>
-    </section>
-
-    <section class="py-5 my-5">
-      <div class="container-fluid">
-
-        <div class="bg-warning py-5 rounded-5" style="background-image: url('images/bg-pattern-2.png') no-repeat;">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-4">
-                <img src="images/phone.png" alt="phone" class="image-float img-fluid">
-              </div>
-              <div class="col-md-8">
-                <h2 class="my-5">Shop faster with foodmart App</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sagittis sed ptibus liberolectus nonet psryroin. Amet sed lorem posuere sit iaculis amet, ac urna. Adipiscing fames semper erat ac in suspendisse iaculis. Amet blandit tortor praesent ante vitae. A, enim pretiummi senectus magna. Sagittis sed ptibus liberolectus non et psryroin.</p>
-                <div class="d-flex gap-2 flex-wrap">
-                  <img src="images/app-store.jpg" alt="app-store">
-                  <img src="images/google-play.jpg" alt="google-play">
+      <section id="latest-services" class="py-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="section-header d-flex align-items-center justify-content-between my-5">
+                <h2 class="section-title">Nos Services</h2>
+                <div class="btn-wrap align-right">
+                    <a href="#" class="d-flex align-items-center nav-link">Voir tous les services <svg width="24" height="24"><use xlink:href="#arrow-right"></use></svg></a>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
-        
+        <div class="row">
+            <?php
+            include_once '../../Controller/serviceController.php';
+            $serviceController = new ServiceController();
+            $services = $serviceController->listService();
+
+            foreach ($services as $service) {
+                // Création de l'URL pour rediriger dynamiquement vers la page correspondante
+                $servicePage = strtolower($service['nom']) . ".php";
+            ?>
+                <div class="col-md-4">
+                    <article class="post-item card border-0 shadow-sm p-3">
+                        <div class="image-holder zoom-effect">
+                            <a href="<?= htmlspecialchars($servicePage) ?>">
+                                <img src="uploads/<?= htmlspecialchars($service['photo']) ?>" alt="Service Image" class="card-img-top">
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="post-meta d-flex text-uppercase gap-3 my-2 align-items-center">
+                                <div class="meta-date"><svg width="16" height="16"><use xlink:href="#calendar"></use></svg><?= htmlspecialchars($service['contact']) ?></div>
+                                <div class="meta-categories"><svg width="16" height="16"><use xlink:href="#category"></use></svg><?= htmlspecialchars($service['type_name']) ?></div>
+                            </div>
+                            <div class="post-header">
+                                <h3 class="post-title">
+                                    <a class="nav-link" href="<?= htmlspecialchars($servicePage) ?>"><?= htmlspecialchars($service['nom']) ?></a>
+                                </h3>
+                                <!-- Modifions ici pour ajouter un onclick sur le numéro de téléphone -->
+                                <p>Contactez : <span class="service-phone" onclick="showModal('<?= htmlspecialchars($service['nom']) ?>', '<?= htmlspecialchars($service['contact']) ?>')"><?= htmlspecialchars($service['contact']) ?></span></p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            <?php
+            }
+            ?>
+        </div>
+    </div>
+</section>
+
+<!-- Modal for email collection -->
+<div id="emailModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Demandez plus d'informations</h2>
+        <p>Veuillez saisir votre email pour recevoir plus de détails .</p>
+        <form id="emailForm" method="POST" action="mailing.php">
+            <input type="hidden" id="serviceName" name="serviceName" value="">
+            <input type="hidden" id="serviceContact" name="serviceContact" value="">
+            <input type="email" id="userEmail" name="userEmail" required placeholder="Votre email" />
+            <button type="submit" class="btn-submit">Envoyer</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Affiche la fenêtre modale avec le nom du service et le numéro de contact
+    function showModal(serviceName, serviceContact) {
+        document.getElementById('serviceName').value = serviceName;
+        document.getElementById('serviceContact').value = serviceContact;
+        document.getElementById('emailModal').style.display = 'block';
+    }
+
+    // Ferme la fenêtre modale
+    function closeModal() {
+        document.getElementById('emailModal').style.display = 'none';
+    }
+</script>
+
+<style>
+    /* Styles pour la fenêtre modale */
+    .modal {
+        display: none; 
+        position: fixed;
+        z-index: 1; 
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); 
+        overflow: auto;
+        padding-top: 60px;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 30px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    .close {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        cursor: pointer;
+    }
+
+    h2 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    p {
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    input[type="email"] {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+
+    button.btn-submit {
+        padding: 10px 20px;
+        background-color: #28a745;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button.btn-submit:hover {
+        background-color: #218838;
+    }
+</style>
+
+
         
       </div>
     </section>
@@ -2490,6 +2713,7 @@
               </form>
             </div>
           </div>
+          
         </div>
       </div>
     </footer>
@@ -2510,5 +2734,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
     <script src="js/plugins.js"></script>
     <script src="js/script.js"></script>
-  </body>
+  
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const body = document.body;
+    const toggle = document.getElementById('darkModeToggle');
+
+    const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
+    body.classList.toggle('dark-mode', isDarkMode);
+    if (toggle) toggle.checked = isDarkMode;
+
+    toggle.addEventListener('change', (event) => {
+      body.classList.toggle('dark-mode', event.target.checked);
+      localStorage.setItem('darkMode', event.target.checked ? 'enabled' : 'disabled');
+    });
+  });
+</script>
+
+</body>
 </html>

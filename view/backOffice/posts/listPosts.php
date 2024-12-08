@@ -851,7 +851,6 @@ if ($searchQuery) {
 
         <h1>Post List</h1>
 
-
 <form action="listPosts.php" method="GET">
     <label for="search">Search Posts</label>
     <input type="text" name="search" id="search" 
@@ -866,6 +865,8 @@ if ($searchQuery) {
             <th>ID</th>
             <th>Title</th>
             <th>Content</th>
+            <th>Image</th>
+            <th>Likes</th> 
             <th>Created At</th>
             <th>Actions</th>
         </tr>
@@ -874,6 +875,16 @@ if ($searchQuery) {
                 <td><?php echo htmlspecialchars($post['id']); ?></td>
                 <td><?php echo htmlspecialchars($post['title']); ?></td>
                 <td><?php echo htmlspecialchars($post['content']); ?></td>
+                <td>
+                    <?php if (!empty($post['image_path'])): ?>
+                        <a href="<?php echo htmlspecialchars($post['image_path']); ?>" target="_blank">
+                            <img src="<?php echo htmlspecialchars($post['image_path']); ?>" alt="Post Image" style="width: 100px; height: auto;">
+                        </a>
+                    <?php else: ?>
+                        No Image
+                    <?php endif; ?>
+                </td>
+                <td><?php echo htmlspecialchars($post['likes']); ?></td>
                 <td><?php echo htmlspecialchars($post['created_at']); ?></td>
                 <td>
                     <a href="deletePost.php?id=<?php echo urlencode($post['id']); ?>">Delete</a>
@@ -886,6 +897,7 @@ if ($searchQuery) {
 <?php else: ?>
     <p class="no-posts-message">No posts found.</p>
 <?php endif; ?>
+
 
 
         <footer class="footer">

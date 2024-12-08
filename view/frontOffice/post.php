@@ -19,18 +19,42 @@ function getCommentsByPostId($postId) {
     <title>Social Posts</title>
 
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/Food.jpeg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-attachment: fixed;
-            display: block;
-            color: #fff;
-        }
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    animation: backgroundSlide 80s infinite;
+    color: #fff;
+}
+
+@keyframes backgroundSlide {
+    0% {
+        background: url('images/85.jpeg') center center / cover no-repeat fixed;
+    }
+    16.67% {
+        background: url('images/86.jpeg') center center / cover no-repeat fixed;
+    }
+    33.33% {
+        background: url('images/87.jpeg') center center / cover no-repeat fixed;
+    }
+    50% {
+        background: url('images/88.jpeg') center center / cover no-repeat fixed;
+    }
+    66.67% {
+        background: url('images/89.jpeg') center center / cover no-repeat fixed;
+    }
+    83.33% {
+        background: url('images/90.jpeg') center center / cover no-repeat fixed;
+    }
+    100% {
+        background: url('images/85.jpeg') center center / cover no-repeat fixed;
+    }
+}
+
 
         header {
             background-color: #28a745;
@@ -117,6 +141,53 @@ function getCommentsByPostId($postId) {
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
+        /* Image styling */
+        .post-image img {
+            width: 100%; /* Make sure the image fits the container */
+            height: auto; /* Maintain the aspect ratio */
+            object-fit: cover; /* Ensure the image covers the space without distortion */
+            border-radius: 8px; /* Optional: Rounded corners for the image */
+        }
+
+        .like-info {
+    display: inline-flex;  /* استخدام inline-flex لضمان أن تكون العناصر في نفس السطر */
+    align-items: center;   /* لمحاذاة العناصر عموديًا في المنتصف */
+    gap: 10px;  /* المسافة بين النص والصورة */
+}
+
+.like-button {
+    display: inline-block;
+    padding: 3px 7px;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.like-button:hover {
+    background-color: #0056b3;
+}
+
+.likes-count {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.likes-count span {
+    margin-left: 10px;
+    font-size: 20px;
+    color: #007bff;
+    font-weight: normal;
+}
+
+
+
         @media (max-width: 600px) {
             body {
                 padding: 10px;
@@ -140,60 +211,68 @@ function getCommentsByPostId($postId) {
     <header>
         <h1>Social Posts</h1>
     </header>
-<!-- Navigation Bar -->
-<div class="navigation">
-    <ul class="nav-menu">
-        <li><a href="home.html">Home</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="productPage.html">Products</a></li>
-        <li><a href="eventsPage.html">Events</a></li>
-    </ul>
-</div>
 
-<style>
-    /* Navigation Bar Styling */
-    .navigation {
-        background-color: #333; 
-        padding: 10px 0;
-        text-align: center;
-    }
+    <!-- Navigation Bar -->
+    <div class="navigation">
+        <ul class="nav-menu">
+            <li><a href="home.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="productPage.html">Products</a></li>
+            <li><a href="eventsPage.html">Events</a></li>
+        </ul>
+    </div>
 
-    .nav-menu {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        gap: 20px; 
-    }
+    <style>
+        /* Navigation Bar Styling */
+        .navigation {
+            background-color: #333; 
+            padding: 10px 0;
+            text-align: center;
+        }
 
-    .nav-menu li {
-        display: inline;
-    }
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px; 
+        }
 
-    .nav-menu a {
-        text-decoration: none;
-        color: #fff; 
-        font-weight: bold;
-        padding: 10px 15px;
-        border-radius: 5px;
-        transition: background-color 0.3s ease, color 0.3s ease;
-    }
+        .nav-menu li {
+            display: inline;
+        }
 
-    .nav-menu a:hover {
-        background-color: #28a745;
-        color: #fff; 
-    }
-</style>
+        .nav-menu a {
+            text-decoration: none;
+            color: #fff; 
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
 
+        .nav-menu a:hover {
+            background-color: #28a745;
+            color: #fff; 
+        }
+    </style>
+   
     <main>
-
+   
         <?php if (!empty($posts)): ?>
             <?php foreach ($posts as $post): ?>
                 <div class="post">
                     <h2><?php echo htmlspecialchars($post['content']); ?></h2>
                     <p><small>Posted on: <?php echo htmlspecialchars($post['created_at']); ?></small></p>
                     
+                    <!-- Display Image if Exists -->
+                    <?php if (!empty($post['image_path'])): ?>
+                        <div class="post-image">
+                            <img src="../../uploads/<?php echo basename($post['image_path']); ?>" alt="Post Image">
+                        </div>
+                    <?php endif; ?>
+
                     <div class="comments">
                         <?php 
                         $postComments = getCommentsByPostId($post['id']);
@@ -207,6 +286,14 @@ function getCommentsByPostId($postId) {
                     </div>
 
                     <div class="actions">
+                    
+                    <div class="like-info">
+                    <p class="likes-count">Likes: <span><?php echo htmlspecialchars($post['likes']); ?></span></p>
+    <a href="posts/increaseLikes.php?post_id=<?php echo urlencode($post['id']); ?>" class="like-button">
+        <img src="images/like1.png" alt="like image" class="like-button-img">
+    </a>
+</div>
+
                         <a href="posts/addComment.php?post_id=<?php echo urlencode($post['id']); ?>">Add Comment</a>
                     </div>
                 </div>

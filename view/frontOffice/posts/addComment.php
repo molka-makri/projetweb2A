@@ -28,11 +28,11 @@ if (isset($_GET['post_id']) && is_numeric($_GET['post_id'])) {
             } elseif (!preg_match('/^[A-Za-z0-9\s.,!?()]+$/u', $content)) {
                 $error = "Content contains invalid characters. Only letters, numbers, and basic punctuation are allowed.";
             } else {
-              
+               // Add the comment to the database
                 $commentController = new CommentController();
                 $commentController->addComment(new Comment(null, $postId, $content));
 
-               
+               // Redirect to the post page
                 header('Location: ../post.php');
                 exit;
             }
@@ -43,7 +43,6 @@ if (isset($_GET['post_id']) && is_numeric($_GET['post_id'])) {
     exit;
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -99,6 +98,19 @@ if (isset($_GET['post_id']) && is_numeric($_GET['post_id'])) {
             color: red;
             margin-bottom: 10px;
         }
+        .chatgpt-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .chatgpt-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .chatgpt-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -117,5 +129,10 @@ if (isset($_GET['post_id']) && is_numeric($_GET['post_id'])) {
 
         <button type="submit">Add Comment</button>
     </form>
+
+    <div class="chatgpt-link">
+        <p>Need help writing your comment? Visit <a href="https://chat.openai.com/" target="_blank">ChatGPT</a> for assistance.</p>
+    </div>
+
 </body>
 </html>

@@ -47,6 +47,19 @@
             color: red;
             margin-bottom: 10px;
         }
+        .chatgpt-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .chatgpt-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .chatgpt-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -58,13 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $title = htmlspecialchars(trim($_POST['title']));
     $content = htmlspecialchars(trim($_POST['content']));
-
-    $bannedWords = [
-        'damn', 'hell', 'idiot', 'stupid', 'fool', 'crap', 'bastard', 'jerk', 'moron', 'asshole', 'dumb', 'shit', 'bitch', 'f***','a**', 'c***', 'slut', 'whore'
-    ];
-    
+    $imagePath = null;
 
     
+    $bannedWords = ['damn', 'hell', 'idiot', 'stupid', 'fool', 'crap', 'bastard', 'jerk', 'moron', 'asshole', 'dumb', 'shit', 'bitch', 'f***', 'a**', 'c***', 'slut', 'whore'];
+
     foreach ($bannedWords as $word) {
         if (stripos($title, $word) !== false || stripos($content, $word) !== false) {
             $error = "The input contains inappropriate words. Please revise your text.";
@@ -72,7 +83,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-   
+    
+    if (!$error && isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        $uploadDir = '../../../uploads/';
+        $imageName = time() . '_' . basename($_FILES['image']['name']);
+        $imagePath = $uploadDir . $imageName;
+
+        if (!in_array($_FILES['image']['type'], $allowedTypes)) {
+            $error = "Invalid image type. Only JPG, PNG, and GIF are allowed.";
+        } elseif (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        } elseif (!move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
+            $error = "Failed to upload image.";
+        }
+    }
+
+    
     if (!$error) {
         if (!preg_match('/^[A-Za-z0-9\s.,!?()-]+$/', $title)) {
             $error = "Invalid title: Only letters, numbers, spaces, and basic punctuation are allowed.";
@@ -81,12 +108,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (strlen($content) < 10) {
             $error = "Content must be at least 10 characters long.";
         } else {
-          
-            $post = new Post(null, $title, $content);
+            
+            $post = new Post(null, $title, $content, $imagePath);
             $postController = new PostController();
             $postController->addPost($post);
 
-           
+            
             header('Location: ../post.php');
             exit;
         }
@@ -94,8 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-
-<form action="" method="POST">
+<form action="" method="POST" enctype="multipart/form-data">
     <?php if ($error): ?>
         <div class="error"><?php echo $error; ?></div>
     <?php endif; ?>
@@ -113,10 +139,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               minlength="10" 
               required><?php echo htmlspecialchars($_POST['content'] ?? ''); ?></textarea>
 
+    <label for="image">Image</label>
+    <input type="file" id="image" name="image" accept="image/*">
+
     <button type="submit">Add Post</button>
 </form>
 
+<div class="chatgpt-link">
+    <p>Need help writing your post? Visit <a href="https://chat.openai.com/" target="_blank">ChatGPT</a> for assistance.</p>
+</div>
 
 </body>
 </html>
-

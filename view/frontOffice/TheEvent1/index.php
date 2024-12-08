@@ -170,6 +170,68 @@ if ($events && $events->rowCount() > 0) {
         color: #0056b3; /* Darker blue on hover */
     }
 </style>
+<style>
+ #weather-section {
+  background-color: #f9f9f9;
+  padding: 20px;
+  margin-top: 40px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.weather-container {
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  cursor: pointer; /* Indicates the icon is clickable */
+}
+
+.weather-icon {
+  width: 60px;
+  height: 60px;
+  margin-left: 20px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.weather-heading {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2e3b4e;
+  margin-bottom: 10px;
+}
+
+.weather-detail {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.weather-detail strong {
+  color: #333;
+}
+
+/* Hide the weather section initially */
+.hidden {
+  display: none;
+}
+
+/* Additional Styling for Responsiveness */
+@media (max-width: 768px) {
+  .weather-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .weather-icon {
+    margin-top: 15px;
+  }
+}
+</style>
+
 </head>
 
 <body>
@@ -188,25 +250,26 @@ if ($events && $events->rowCount() > 0) {
       </div>-->
 
       <nav id="nav-menu-container">
-        <ul class="nav-menu">
-          
-          <li><a href="#about" class="about-title">About our Events</a></li>
-          <li><a href="#speakers" class="organizers-title">organizers</a></li>
-          <li><a href="#events" class="program-title">Schedule</a></li>
-          <li><a href="#calendar" class="calendar-title" >calendar</a></li>
-          
-          
-          <li><a href="#gallery" class="gallery-title">Gallery</a></li>
-          
-          <li><a href="#contact" class="contact-title">Contact</a></li>
-          
-        </ul>
-      </nav><!-- #nav-menu-container -->
-      <div class="language-switcher">
-        <button id="enBtn">EN</button>
-        <button id="frBtn">FR</button>
+      <ul class="nav-menu">
+        <li><a href="#about" class="about-title">About our Events</a></li>
+        <li><a href="#speakers" class="organizers-title">Organizers</a></li>
+        <li><a href="#events" class="program-title">Schedule</a></li>
+        <li><a href="#calendar" class="calendar-title">Calendar</a></li>
+        <li><a href="#gallery" class="gallery-title">Gallery</a></li>
+        <li><a href="#contact" class="contact-title">Contact</a></li>
+      </ul>
+    </nav>
+
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+      <button id="enBtn">EN</button>
+      <button id="frBtn">FR</button>
     </div>
-    </div>
+
+    <!-- Weather Info Display -->
+    <!-- Weather Info Display -->
+    
+  </div>
   </header><!-- #header -->
 
   <!--==========================
@@ -236,9 +299,51 @@ if ($events && $events->rowCount() > 0) {
           </div>
           
           
+          
         </div>
       </div>
     </section>
+    
+
+<script>
+  const url = 'http://api.weatherapi.com/v1/current.json?key=0c966ea99c5f4666aa4224142240812&q=Tunis&aqi=no';
+
+async function fetchClimateData() {
+  try {
+    const response = await fetch(url);
+    const data = await response.json(); // Parse the JSON response
+
+    // Extract weather information from the response
+    const location = data.location.name; 
+    const condition = data.current.condition.text; 
+    const tempC = data.current.temp_c; 
+    const tempF = data.current.temp_f; 
+    const windSpeed = data.current.wind_kph; 
+    const windDirection = data.current.wind_dir; 
+    const humidity = data.current.humidity; 
+    const icon = data.current.condition.icon; 
+
+    // Display the weather data on the page
+    document.getElementById('weather-info').innerHTML = `
+      <br>
+    <h3>Current Weather in ${location}</h3>
+      <p><strong>Condition:</strong> ${condition}</p>
+      <p><strong>Temperature:</strong> ${tempC}°C / ${tempF}°F</p>
+      <p><strong>Wind Speed:</strong> ${windSpeed} km/h (${windDirection})</p>
+      <p><strong>Humidity:</strong> ${humidity}%</p>
+      <img src="https:${icon}" alt="Weather Icon" class="weather-icon">
+    `;
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    document.getElementById('weather-info').innerHTML = 'Unable to fetch weather data.';
+  }
+}
+
+// Call the function to fetch and display the data when the page loads
+fetchClimateData();
+</script>
+
+
 
     <!--==========================
       Oragnizer Section
@@ -714,6 +819,7 @@ if ($events && $events->rowCount() > 0) {
 
       </div>
     </section><!-- #contact -->
+    
 
   </main>
   <div class="modal fade" id="participateModal" tabindex="-1" aria-labelledby="participateModalLabel" aria-hidden="true">
@@ -860,6 +966,8 @@ if ($events && $events->rowCount() > 0) {
   <script src="lib/wow/wow.min.js"></script>
   <script src="lib/venobox/venobox.min.js"></script>
   <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+  <script src="https://code.responsivevoice.org/responsivevoice.js?key=EGYc5uHv"></script>
+
 
   <!-- Contact Form JavaScript File -->
   <script src="contactform/contactform.js"></script>

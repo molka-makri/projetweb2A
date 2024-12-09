@@ -34,6 +34,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rating'], $_POST['revi
   exit;
 }
 
+$averageRating = 0;
+$totalReviews = count($reviews);
+
+if ($totalReviews > 0) {
+    $sumRatings = 0;
+
+    foreach ($reviews as $review) {
+        $sumRatings += $review['rating']; // Assuming $review['rating'] gives the rating value
+    }
+
+    $averageRating = $sumRatings / $totalReviews;
+}
 
 ?>
 
@@ -379,11 +391,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rating'], $_POST['revi
     <section class="product-details-container" style="background-color: #f9f9f9; padding: 40px 0;">
         <div class="container">
             <div class="product-details">
+
                 <!-- Product Image on the right -->
                 <div class="product-image" style="float: right; width: 45%; padding-left: 20px;">
                     <img src="<?= htmlspecialchars($product['Product_img']) ?>" alt="<?= htmlspecialchars($product['Product_name']) ?>" style="width: 100%; border-radius: 8px; object-fit: cover;">
                 </div>
-
+                
                 <!-- Product description on the left -->
                 <div class="product-info" style="float: left; width: 55%; padding-right: 20px;">
                     <h1><?= htmlspecialchars($product['Product_name']) ?></h1>
@@ -395,8 +408,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rating'], $_POST['revi
                     </button>
                 </div>
             </div>
+            <h2>Average Rating: <?php echo number_format($averageRating, 1); ?> / 5</h2>
+                    <p>Total Reviews: <?php echo $totalReviews; ?></p>
         </div>
+        
     </section>
+    
 
 
 

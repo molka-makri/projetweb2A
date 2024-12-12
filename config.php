@@ -1,4 +1,3 @@
-
 <?php
 
 class config
@@ -37,7 +36,8 @@ class config
 
                
 
-                //echo "connected successfully";
+                // echo "connected successfully";
+               
 
             } catch (Exception $e) {
 
@@ -56,8 +56,3 @@ class config
 config::getConnexion();
 
 ?>
-
-
-
-
-

@@ -1,3 +1,25 @@
+<?php
+// include '../../Controller/serviceController.php';
+//     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//         // Validate and sanitize inputs
+//         $service_type_id = filter_input(INPUT_POST, 'service_type_id', FILTER_VALIDATE_INT);
+//         $nom = filter_input(INPUT_POST, 'nom', FILTER_SANITIZE_STRING);
+//         $contact = filter_input(INPUT_POST, 'contact', FILTER_SANITIZE_STRING);
+//         $photo = filter_input(INPUT_POST, 'photo', FILTER_SANITIZE_URL);
+
+//         if ($service_type_id && $nom && $contact) {
+//             // Create a new Service instance
+//             $service = new Service(null, $service_type_id, $nom, $contact, $photo);
+
+//             // Add the service to the database
+//             $manager = new ServiceController();
+//             $manager->addService($service);
+//         } else {
+//             echo "Veuillez remplir tous les champs requis.";
+//         }
+//     }
+    ?> 
+    
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -40,6 +62,81 @@
 
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="assets/css/demo.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+    /* Sidebar Wrapper */
+    .sidebar-wrapper {
+      width: 250px;
+      background: linear-gradient(180deg, #8aa8d4, #d6e4f0); /* Bleu pastel adouci */
+      color: white;
+      height: 100vh;
+      padding: 20px 10px;
+      box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Section Header */
+    .text-section {
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 15px;
+      color: #5c5c5c; /* Gris doux */
+    }
+
+    /* Nav Item */
+    .nav-item {
+      list-style: none;
+      margin: 10px 0;
+    }
+
+    .nav-item a {
+      text-decoration: none;
+      color: #2c3e50; /* Gris bleu */
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.4); /* Fond clair translucide */
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .nav-item a:hover {
+      background: rgba(255, 255, 255, 0.6);
+      transform: translateX(5px);
+    }
+
+    /* Icon Styling */
+    .icon {
+      margin-right: 10px;
+    }
+
+    .material-icons {
+      font-size: 24px;
+      color: #34495e; /* Bleu-gris doux */
+    }
+
+    /* Active State */
+    .nav-item a.active {
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mobile Friendly */
+    @media screen and (max-width: 768px) {
+      .sidebar-wrapper {
+        width: 200px;
+        font-size: 14px;
+      }
+
+      .nav-item a {
+        padding: 8px 10px;
+      }
+
+      .material-icons {
+        font-size: 20px;
+      }
+    }
+  </style>
   </head>
   <body>
     <div class="wrapper">
@@ -98,230 +195,43 @@
                 <span class="sidebar-mini-icon">
                   <i class="fa fa-ellipsis-h"></i>
                 </span>
-                <h4 class="text-section">Components</h4>
-              </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#base">
-                  <i class="fas fa-layer-group"></i>
-                  <p>Base</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="base">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="components/avatars.html">
-                        <span class="sub-item">Avatars</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="components/buttons.html">
-                        <span class="sub-item">Buttons</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="components/gridsystem.html">
-                        <span class="sub-item">Grid System</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="components/panels.html">
-                        <span class="sub-item">Panels</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="components/notifications.html">
-                        <span class="sub-item">Notifications</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="components/sweetalert.html">
-                        <span class="sub-item">Sweet Alert</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="components/font-awesome-icons.html">
-                        <span class="sub-item">Font Awesome Icons</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="components/simple-line-icons.html">
-                        <span class="sub-item">Simple Line Icons</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="components/typography.html">
-                        <span class="sub-item">Typography</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarLayouts">
-                  <i class="fas fa-th-list"></i>
-                  <p>Sidebar Layouts</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="sidebarLayouts">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="sidebar-style-2.html">
-                        <span class="sub-item">Sidebar Style 2</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="icon-menu.html">
-                        <span class="sub-item">Icon Menu</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#forms">
-                  <i class="fas fa-pen-square"></i>
-                  <p>Forms</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="forms">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="forms/forms.html">
-                        <span class="sub-item">Basic Form</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#tables">
-                  <i class="fas fa-table"></i>
-                  <p>Tables</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="tables">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="tables/tables.html">
-                        <span class="sub-item">Basic Table</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="tables/datatables.html">
-                        <span class="sub-item">Datatables</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#maps">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <p>Maps</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="maps">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="maps/googlemaps.html">
-                        <span class="sub-item">Google Maps</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="maps/jsvectormap.html">
-                        <span class="sub-item">Jsvectormap</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#charts">
-                  <i class="far fa-chart-bar"></i>
-                  <p>Charts</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="charts">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="charts/charts.html">
-                        <span class="sub-item">Chart Js</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="charts/sparkline.html">
-                        <span class="sub-item">Sparkline</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a href="widgets.html">
-                  <i class="fas fa-desktop"></i>
-                  <p>Widgets</p>
-                  <span class="badge badge-success">4</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="../../documentation/index.html">
-                  <i class="fas fa-file"></i>
-                  <p>Documentation</p>
-                  <span class="badge badge-secondary">1</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#submenu">
-                  <i class="fas fa-bars"></i>
-                  <p>Menu Levels</p>
-                  <span class="caret"></span>
-                </a>
-                <div class="collapse" id="submenu">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a data-bs-toggle="collapse" href="#subnav1">
-                        <span class="sub-item">Level 1</span>
-                        <span class="caret"></span>
-                      </a>
-                      <div class="collapse" id="subnav1">
-                        <ul class="nav nav-collapse subnav">
-                          <li>
-                            <a href="#">
-                              <span class="sub-item">Level 2</span>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="#">
-                              <span class="sub-item">Level 2</span>
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </li>
-                    <li>
-                      <a data-bs-toggle="collapse" href="#subnav2">
-                        <span class="sub-item">Level 1</span>
-                        <span class="caret"></span>
-                      </a>
-                      <div class="collapse" id="subnav2">
-                        <ul class="nav nav-collapse subnav">
-                          <li>
-                            <a href="#">
-                              <span class="sub-item">Level 2</span>
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <span class="sub-item">Level 1</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-            </ul>
+                <h4 class="text-section">Services Management</h4>
+        </li>
+        <!-- Services List -->
+        <li class="nav-item">
+          <a class="nav-link" href="servicelist.php">
+            <div class="icon">
+              <span class="material-icons">visibility</span>
+            </div>
+            <span>Afficher les services</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="addservice.php">
+            <div class="icon">
+              <span class="material-icons">add</span>
+            </div>
+            <span>Ajouter</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="Proposerunservice.php">
+            <div class="icon">
+              <span class="material-icons">post_add</span>
+            </div>
+            <span>ProposerService</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="deleteservice.php">
+            <div class="icon">
+              <span class="material-icons">delete</span>
+            </div>
+            <span>Supprimer</span>
+          </a>
+        </li>
+        
+      </ul>
           </div>
         </div>
       </div>
@@ -713,7 +623,7 @@
         <div class="container">
           <div class="page-inner">
             <div class="page-header">
-              <h4 class="page-title">Manage users</h4>
+              <h4 class="page-title">Manage services</h4>
               <ul class="breadcrumbs">
                 <li class="nav-home">
                   <a href="#">
@@ -735,11 +645,8 @@
               </ul>
             </div>
 
-          <div class="page-category">Inner page content goes here</div>
+          <div class="page-category">selectionnez l'un des services a gauche</div>
           
-        LEHNE ZID CRUD SERVICES
-        
-        
         
         
         </div>

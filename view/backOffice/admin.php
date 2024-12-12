@@ -117,37 +117,6 @@
                     </table>
                 </div>
 
-                <!-- organizer Section -->
-                <div id="eventsSection" class="mt-4">
-                    <h4>Manage organizers</h4>
-                    <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addEventModal">Add Event</button>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Title</th>
-                                <th>Date</th>
-                                <th>Location</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Example Event -->
-                            <tr>
-                                <td>1</td>
-                                <td>Event 1</td>
-                                <td>2024-12-25</td>
-                                <td>Location 1</td>
-                                <td>
-                                    <button class="btn btn-info btn-sm">Edit</button>
-                                    <button class="btn btn-danger btn-sm">Delete</button>
-                                </td>
-                            </tr>
-                            <!-- Add more events here -->
-                        </tbody>
-                    </table>
-                </div>
-
                 <!-- Services Section -->
                 <div id="servicesSection" class="mt-4">
                     <h4>Manage Services</h4>

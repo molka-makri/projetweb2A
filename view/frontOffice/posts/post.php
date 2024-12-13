@@ -33,25 +33,25 @@ body {
 
 @keyframes backgroundSlide {
     0% {
-        background: url('images/85.jpeg') center center / cover no-repeat fixed;
+        background: url('../images/85.jpeg') center center / cover no-repeat fixed;
     }
     16.67% {
-        background: url('images/86.jpeg') center center / cover no-repeat fixed;
+        background: url('../images/86.jpeg') center center / cover no-repeat fixed;
     }
     33.33% {
-        background: url('images/87.jpeg') center center / cover no-repeat fixed;
+        background: url('../images/87.jpeg') center center / cover no-repeat fixed;
     }
     50% {
-        background: url('images/88.jpeg') center center / cover no-repeat fixed;
+        background: url('../images/88.jpeg') center center / cover no-repeat fixed;
     }
     66.67% {
-        background: url('images/89.jpeg') center center / cover no-repeat fixed;
+        background: url('../images/89.jpeg') center center / cover no-repeat fixed;
     }
     83.33% {
-        background: url('images/90.jpeg') center center / cover no-repeat fixed;
+        background: url('../images/90.jpeg') center center / cover no-repeat fixed;
     }
     100% {
-        background: url('images/85.jpeg') center center / cover no-repeat fixed;
+        background: url('../images/85.jpeg') center center / cover no-repeat fixed;
     }
 }
 
@@ -150,9 +150,9 @@ body {
         }
 
         .like-info {
-    display: inline-flex;  /* استخدام inline-flex لضمان أن تكون العناصر في نفس السطر */
-    align-items: center;   /* لمحاذاة العناصر عموديًا في المنتصف */
-    gap: 10px;  /* المسافة بين النص والصورة */
+    display: inline-flex;  
+    align-items: center;   /
+    gap: 10px;  
 }
 
 .like-button {
@@ -290,11 +290,11 @@ body {
                     <div class="like-info">
                     <p class="likes-count">Likes: <span><?php echo htmlspecialchars($post['likes']); ?></span></p>
     <a href="posts/increaseLikes.php?post_id=<?php echo urlencode($post['id']); ?>" class="like-button">
-        <img src="images/like1.png" alt="like image" class="like-button-img">
+        <img src="../images/like1.png" alt="like image" class="like-button-img">
     </a>
 </div>
 
-                        <a href="posts/addComment.php?post_id=<?php echo urlencode($post['id']); ?>">Add Comment</a>
+                        <a href="addComment.php?post_id=<?php echo urlencode($post['id']); ?>">Add Comment</a>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -304,7 +304,7 @@ body {
     </main>
     
     <div class="add-post-btn-container">
-        <a href="posts/addPost.php" class="add-post-btn">Add New Post</a>
+        <a href="addPost.php" class="add-post-btn">Add New Post</a>
     </div>
 </body>
 </html>

@@ -269,7 +269,7 @@ body {
                     <!-- Display Image if Exists -->
                     <?php if (!empty($post['image_path'])): ?>
                         <div class="post-image">
-                            <img src="../../uploads/<?php echo basename($post['image_path']); ?>" alt="Post Image">
+                            <img src="../../../uploads/<?php echo basename($post['image_path']); ?>" alt="Post Image">
                         </div>
                     <?php endif; ?>
 

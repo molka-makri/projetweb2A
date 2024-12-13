@@ -15,7 +15,6 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     die("Invalid product ID.");
 }
 
-// Check if the product exists
 if (!$product) {
     die("Product not found.");
 }

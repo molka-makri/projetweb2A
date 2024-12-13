@@ -1,6 +1,6 @@
 <?php
-include '../../Controller/PostController.php';
-include '../../Controller/CommentController.php';
+include '../../../Controller/PostController.php';
+include '../../../Controller/CommentController.php';
 
 $postController = new PostController();
 $posts = $postController->listPosts();

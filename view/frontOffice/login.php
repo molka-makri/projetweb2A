@@ -27,7 +27,7 @@ if (isset($_POST['login'])) {
             ];
 
             // Rediriger vers index.php après une connexion réussie
-            header('Location: ../front/produit.html');
+            header('Location: ../frontOffice');
             exit();
         } else {
             $message = '<span style="color: red;">Email ou mot de passe incorrect.</span>';

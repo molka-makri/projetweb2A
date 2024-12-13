@@ -1,13 +1,4 @@
 <?php
-
-
-
-
-
-
-
-
-
 // Inclure les fichiers nécessaires pour la base de données et les classes
 
 // Include the category controller
@@ -52,7 +43,7 @@ if (isset($_POST['entrer'])) {
             // Succès
             echo '<script>
                     alert("Inscription réussie !");
-                    window.location.href = "produit.html";
+                    window.location.href = "home.html";
                   </script>';
 
 

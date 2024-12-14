@@ -1,51 +1,11 @@
 <?php
-// Include necessary files
-require_once '../../controller/productController.php';
-require_once '../../controller/reviewController.php';
+include '../../Controller/CommandeC.php';
 
-// Initialize controllers
-$productController = new productController();
-$reviewController = new ReviewController();
+// Créer une instance du contrôleur
+$commandeC = new CommandeC();
 
-// Check if product ID is valid and retrieve product details
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $productId = intval($_GET['id']); // Sanitize the ID
-    $product = $productController->getProduct($productId); // Fetch product details
-} else {
-    die("Invalid product ID.");
-}
-
-// Check if the product exists
-if (!$product) {
-    die("Product not found.");
-}
-
-// Fetch reviews for the product
-$reviews = $reviewController->getReviews($productId);
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rating'], $_POST['review_text'])) {
-  $rating = intval($_POST['rating']);
-  $review_text = htmlspecialchars($_POST['review_text']);
-
-  // Call addReview method to insert the review into the database
-  $reviewController->addReview($productId, $rating, $review_text);
-
-  // Redirect back to the product page after review is added (to avoid resubmission on refresh)
-  header("Location: productDetails.php?id=" . $productId);
-  exit;
-}
-
-$averageRating = 0;
-$totalReviews = count($reviews);
-
-if ($totalReviews > 0) {
-    $sumRatings = 0;
-
-    foreach ($reviews as $review) {
-        $sumRatings += $review['rating']; // Assuming $review['rating'] gives the rating value
-    }
-
-    $averageRating = $sumRatings / $totalReviews;
-}
+// Récupérer la liste des commandes
+$listeCommandes = $commandeC->listCommandes();
 
 ?>
 
@@ -75,119 +35,159 @@ if ($totalReviews > 0) {
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css"> <!-- Add your custom CSS if needed -->
   <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #fef8f2;
-            color: #333;
+        .card {
+            border: 1px solid #ddd;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            background-color: #fff;
         }
-        .product-container {
-            max-width: 1100px;
-            margin: 50px auto;
-            padding: 30px;
-            background: #fff;
-            border-radius: 10px;
+
+        .card:hover {
+            transform: translateY(-5px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            display: flex;
-            gap: 30px;
         }
-        .product-img {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .product-img img {
-            max-width: 100%;
-            max-height: 500px;
-            border-radius: 10px;
-            object-fit: cover;
-        }
-        .product-details {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .product-details h1 {
-            font-size: 2rem;
-            color: black;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-        .product-price {
-            font-size: 1.5rem;
-            color: white;
+
+        .card-header {
+            background-color: #f8f9fa;
             font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .product-description {
             font-size: 1.2rem;
-            color: #555;
-            margin-bottom: 30px;
         }
-        .product-actions a {
-            text-decoration: none;
-            padding: 10px 20px;
-            font-size: 1.2rem;
-            font-weight: 500;
-            border-radius: 5px;
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-footer {
+            background-color: #f8f9fa;
+            border-top: 1px solid #ddd;
+        }
+
+        .card-footer .btn {
+            font-size: 1rem;
+            padding: 12px;
+            border-radius: 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .card-footer .btn:hover {
+            background-color: #0056b3;
+        }
+
+        h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0;
+        }
+
+        .card-header img {
             margin-right: 15px;
         }
-        .product-actions .btn-add {
-            background-color: #e67e22;
-            color: #fff;
+
+        .card-body p {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            line-height: 1.5;
         }
-        .product-actions .btn-add:hover {
-            background-color: #d35400;
+
+        .card-footer .btn-block {
+            width: 100%;
         }
-        .product-actions .btn-back {
-            background-color: #f39c12;
-            color: #fff;
+
+        .rating {
+            margin-top: 10px;
         }
-        .product-actions .btn-back:hover {
-            background-color: #e67e22;
+
+        .star {
+            background: none;
+            border: none;
+            color: #ddd;
+            font-size: 2rem;
+            cursor: pointer;
         }
-                    /* Star rating styles */
-            .star-rating {
-                display: flex;
-                direction: row;
-            }
 
-            .star {
-                font-size: 24px; /* Adjust size of stars */
-                color: #ddd; /* Default star color (inactive) */
-                cursor: pointer;
-                margin-right: 5px;
-            }
+        .star.selected {
+            color: gold;
+        }
 
-            /* Color of the stars when the user hovers */
-            .star:hover,
-            .star:hover ~ .star {
-                color: #ff6600; /* Orange color for hover */
-            }
+        /* Style du chatbot */
+        .chatbox {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 400px;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
 
-            /* Filled stars */
-            .star.filled {
-                color: #ff6600; /* Orange color for filled stars */
-            }
+        .chatbox-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-            /* Review submission button */
-            .btn-submit-review {
-                background-color: #ff6600;
-                color: white;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            }
+        .chatbox-body {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
 
-            /* Button hover effect */
-            .btn-submit-review:hover {
-                background-color: #e65c00;
-            }
+        .chatbox-footer {
+            display: flex;
+        }
 
+        .chatbox-footer input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .chatbox-footer button {
+            width: 15%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .chatbox-footer button:hover {
+            background-color: #0056b3;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .suggestion-button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .suggestion-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
+
+
+
+
 
 <body>
 
@@ -257,20 +257,22 @@ if ($totalReviews > 0) {
         </a>
     </div>
 </div>
+
+          
           
           <div class="col-sm-6 offset-sm-2 offset-md-0 col-lg-5 d-none d-lg-block">
             <div class="search-bar row bg-light p-2 my-2 rounded-4">
               <div class="col-md-4 d-none d-md-block">
-                <select class="form-select border-0 bg-transparent">
+                <!-- <select class="form-select border-0 bg-transparent">
                   <option>All Categories</option>
                   <option>Groceries</option>
                   <option>Drinks</option>
                   <option>Chocolates</option>
-                </select>
+                </select> -->
               </div>
               <div class="col-11 col-md-7">
                 <form id="search-form" class="text-center" action="index.html" method="post">
-                  <input type="text" class="form-control border-0 bg-transparent" placeholder="Search for more than 20,000 products" />
+                  <input type="text" class="form-control border-0 bg-transparent" placeholder="" />
                 </form>
               </div>
               <div class="col-1">
@@ -387,96 +389,44 @@ if ($totalReviews > 0) {
         </div>
       </div>
     </header>
-
-    <section class="product-details-container" style="background-color: #f9f9f9; padding: 40px 0;">
-        <div class="container">
-            <div class="product-details">
-
-                <!-- Product Image on the right -->
-                <div class="product-image" style="float: right; width: 45%; padding-left: 20px;">
-                    <img src="<?= htmlspecialchars($product['Product_img']) ?>" alt="<?= htmlspecialchars($product['Product_name']) ?>" style="width: 100%; border-radius: 8px; object-fit: cover;">
+        <!-- Commandes Section -->
+    <section id="commandes" class="container my-5">
+        <h2 class="text-center mb-4">Les Commandes disponibles</h2>
+  
+        <!-- Displaying Orders in Cards -->
+        <div class="row">
+            <?php foreach ($listeCommandes as $commande): ?>
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm rounded-lg" data-id="<?= $commande['idCommande']; ?>"> <!-- Ajout de data-id -->
+                        <div class="card-header d-flex align-items-center">
+                            <!-- Image de commande -->
+                            <img src="<?= 'images/offer2.png' ?>" alt="Offer Image" class="img-fluid rounded-circle" style="width: 50px; height: 50px; margin-right: 15px;">
+                            <h4 class="mb-0">Commande <?= $commande['idCommande']; ?></h4>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Produit :</strong> <?= $commande['type']; ?></p>
+                            <p><strong>Quantité :</strong> <?= $commande['quantite']; ?></p>
+                            <p><strong>Prix unitaire :</strong> <?= number_format($commande['prix'], 2); ?> €</p>
+                            <p><strong>Date de commande :</strong> <?= $commande['dateCommande']; ?></p>
+                            <p><strong>Total :</strong> <?= number_format($commande['quantite'] * $commande['prix'], 2); ?> €</p>
+                        </div>
+                        <div class="card-footer text-center">
+                            <!-- Lien pour passer au paiement -->
+                            <a href="payment.php?id=<?= $commande['idCommande']; ?>" class="btn btn-primary btn-block">Passer au paiement</a>
+                            <div class="rating">
+                                <button class="star" data-rating="1">&#9733;</button>
+                                <button class="star" data-rating="2">&#9733;</button>
+                                <button class="star" data-rating="3">&#9733;</button>
+                                <button class="star" data-rating="4">&#9733;</button>
+                                <button class="star" data-rating="5">&#9733;</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <!-- Product description on the left -->
-                <div class="product-info" style="float: left; width: 55%; padding-right: 20px;">
-                    <h1><?= htmlspecialchars($product['Product_name']) ?></h1>
-                    <p class="product-description"><?= nl2br(htmlspecialchars($product['Product_description'])) ?></p>
-                    <p class="product-price" style="font-size: 1.5em; color: #ff6600;">$<?= htmlspecialchars($product['Product_price']) ?></p>
-                    <!-- Add to Cart and other buttons (Add functionality as needed) -->
-                    <!-- <button class="btn btn-add-to-cart" style="background-color: #ff6600; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                        Add to Cart
-                    </button> -->
-                </div>
-            </div>
-            <h2>Average Rating: <?php echo number_format($averageRating, 1); ?> / 5</h2>
-                    <p>Total Reviews: <?php echo $totalReviews; ?></p>
+            <?php endforeach; ?>
         </div>
-        
     </section>
     
-
-
-
- <!-- Reviews Section -->
- <section class="product-reviews-container" style="background-color: #fff; padding: 40px 0;">
-        <div class="container">
-            <h2>Customer Reviews</h2>
-
-            <!-- Display reviews -->
-            <?php if (count($reviews) > 0): ?>
-    <div class="reviews-list container p-4 border rounded shadow-sm bg-light">
-        <?php foreach ($reviews as $review): ?>
-            <div class="review-item mb-3 pb-3 border-bottom">
-                <div class="review-rating mb-2">
-                    <strong class="text-dark">Rating: </strong>
-                    <span class="text-warning"><?= str_repeat('⭐', $review['rating']) ?></span>
-                </div>
-                <div class="review-text mb-2">
-                    <p class="mb-0"><?= nl2br(htmlspecialchars($review['review_text'])) ?></p>
-                </div>
-                <div class="review-date text-muted">
-                    <small>Posted on <?= date('F j, Y', strtotime($review['created_at'])) ?></small>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-<?php else: ?>
-    <div class="container p-4 border rounded shadow-sm bg-light text-center">
-        <p class="mb-0 text-muted">No reviews yet. Be the first to write a review!</p>
-    </div>
-<?php endif; ?>
-
-            <!-- Review submission form -->
-            <form action="productDetails.php?id=<?= $productId ?>" method="POST" class="review-form container p-3 border rounded shadow bg-light">
-    <div class="row g-3 align-items-center">
-        <!-- Rating Field -->
-        <div class="col-md-4">
-            <label for="rating" class="form-label">Rating:</label>
-            <select name="rating" id="rating" class="form-select" required>
-                <option value="1">1 Star</option>
-                <option value="2">2 Stars</option>
-                <option value="3">3 Stars</option>
-                <option value="4">4 Stars</option>
-                <option value="5">5 Stars</option>
-            </select>
-        </div>
-
-        <!-- Review Textarea -->
-        <div class="col-md-6">
-            <label for="review_text" class="form-label">Review:</label>
-            <textarea name="review_text" id="review_text" class="form-control" rows="1" required></textarea>
-        </div>
-
-        <!-- Submit Button -->
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-warning w-100">Submit</button>
-        </div>
-    </div>
-</form>
-
-
-        </div>
-    </section>
 
 
 

@@ -33,7 +33,7 @@ if (isset($_GET['post_id']) && is_numeric($_GET['post_id'])) {
                 $commentController->addComment(new Comment(null, $postId, $content));
 
                // Redirect to the post page
-                header('Location: post.php');
+                header('Location: ../post.php');
                 exit;
             }
         }

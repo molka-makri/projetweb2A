@@ -100,35 +100,14 @@ $categories = $categoryController->getCategories(); // Fetch categories from the
         <div class="order-md-last">
           <h4 class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-primary">Your cart</span>
-            <span class="badge bg-primary rounded-pill">3</span>
+            <span class="badge bg-primary rounded-pill" id="cart-quantity">0</span>
           </h4>
-          <ul class="list-group mb-3">
-            <li class="list-group-item d-flex justify-content-between lh-sm">
-              <div>
-                <h6 class="my-0">Growers cider</h6>
-                <small class="text-body-secondary">Brief description</small>
-              </div>
-              <span class="text-body-secondary">$12</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between lh-sm">
-              <div>
-                <h6 class="my-0">Fresh grapes</h6>
-                <small class="text-body-secondary">Brief description</small>
-              </div>
-              <span class="text-body-secondary">$8</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between lh-sm">
-              <div>
-                <h6 class="my-0">Heinz tomato ketchup</h6>
-                <small class="text-body-secondary">Brief description</small>
-              </div>
-              <span class="text-body-secondary">$5</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
+            <<ul class="list-group mb-3" id="cart-items">
+          <li class="list-group-item d-flex justify-content-between">
               <span>Total (USD)</span>
-              <strong>$20</strong>
-            </li>
-          </ul>
+              <strong id="cart-total">$0</strong>
+          </li>
+            </ul>
   
           <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
         </div>
@@ -592,7 +571,9 @@ $categories = $categoryController->getCategories(); // Fetch categories from the
         <?php while ($product = $products->fetch(PDO::FETCH_ASSOC)): ?>
             <div class="col product" data-category-id="<?= htmlspecialchars($product['Product_categorie']) ?>">
                 <div class="product-item">
-                    <a href="#" class="btn-wishlist">
+                    <a href="#" class="btn-wishlist" 
+                      data-name="<?= htmlspecialchars($product['Product_name']) ?>" 
+                      data-price="<?= htmlspecialchars($product['Product_price']) ?>">
                         <svg width="24" height="24"><use xlink:href="#heart"></use></svg>
                     </a>
                     <figure>
@@ -2280,6 +2261,51 @@ $categories = $categoryController->getCategories(); // Fetch categories from the
 
 
     </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const cartItems = document.getElementById('cart-items');
+                const cartTotal = document.getElementById('cart-total');
+                const cartQuantity = document.getElementById('cart-quantity');
+                let total = 0; // Initial total price
+                let quantity = 0; // Initial total quantity
+
+                document.querySelectorAll('.btn-wishlist').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        event.preventDefault();
+
+                        // Get product details from data attributes
+                        const productName = button.getAttribute('data-name');
+                        const productPrice = parseFloat(button.getAttribute('data-price'));
+
+                        // Create a new cart item
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item d-flex justify-content-between lh-sm';
+                        listItem.innerHTML = `
+                            <div>
+                                <h6 class="my-0">${productName}</h6>
+                                <small class="text-body-secondary">Added from wishlist</small>
+                            </div>
+                            <span class="text-body-secondary">$${productPrice.toFixed(2)}</span>
+                        `;
+
+                        // Insert the new item before the total row
+                        cartItems.insertBefore(listItem, cartItems.lastElementChild);
+
+                        // Update total price
+                        total += productPrice;
+                        cartTotal.textContent = `$${total.toFixed(2)}`;
+
+                        // Update total quantity
+                        quantity += 1;
+                        cartQuantity.textContent = quantity;
+                    });
+                });
+            });
+        </script>
+
+
+    
 
 
     <script src="js/jquery-1.11.0.min.js"></script>

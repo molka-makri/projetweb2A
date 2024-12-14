@@ -1,11 +1,12 @@
 <?php
+require_once __DIR__ . '/../config.php';  // Chemin relatif depuis le répertoire actuel
 
 class Payment {
-    public $db;
+    private $db;
 
     public function __construct() {
         try {
-            $this->db = new PDO("mysql:host=localhost;dbname=projetweb", "root", "");
+            $this->db = new PDO("mysql:host=localhost;dbname=serenity_springs", "root", "");
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             die("Erreur de connexion à la base de données : " . $e->getMessage());

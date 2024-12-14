@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $postController->addPost($post);
 
             
-            header('Location: post.php');
+            header('Location: ../post.php');
             exit;
         }
     }

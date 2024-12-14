@@ -905,60 +905,80 @@ fetchClimateData();
     Footer
   ============================-->
   <!--  footer -->
-  <footr>
-    <div class="footer top_layer ">
-        <div class="container">
-
-            <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
-                    <div class="address">
-                        <a href="index.html"> <img src="images/logo.png" alt="logo" /></a>
-                        <p>dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et sdolor sit amet, consectetur adipiscing elit, </p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
-                    <div class="address">
-                        <h3>Quick links</h3>
-                        <ul class="Links_footer">
-                            <li><img src="icon/3.png" alt="#" /> <a href="#"> Join Us</a> </li>
-                            <li><img src="icon/3.png" alt="#" /> <a href="#">Maintenance</a> </li>
-                            <li><img src="icon/3.png" alt="#" /> <a href="#">Language Packs</a> </li>
-                            <li><img src="icon/3.png" alt="#" /> <a href="#">LearnPress</a> </li>
-                            <li><img src="icon/3.png" alt="#" /> <a href="#">Release Status</a> </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
-                    <div class="address">
-                        <h3>Subcribe email</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do </p>
-                        <input class="form-control" placeholder="Your Email" type="type" name="Your Email">
-                        <button class="submit-btn">Submit</button>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
-                    <div class="address">
-                        <h3>Contact Us</h3>
-
-                        <ul class="loca">
-                            <li>
-                                <a href="#"><img src="icon/loc.png" alt="#" /></a>London 145
-                                <br>United Kingdom </li>
-                            <li>
-                                <a href="#"><img src="icon/email.png" alt="#" /></a>demo@gmail.com </li>
-                            <li>
-                                <a href="#"><img src="icon/call.png" alt="#" /></a>+12586954775 </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+  <footer id="footer" style="background-color: #2c6e49; padding: 60px 0; font-family: 'Roboto', sans-serif; color: #fff; border-top: 2px solid #4CAF50;">
+    <div class="container">
+      <div class="row">
+        <!-- Footer Info Section (Left-Aligned) -->
+        <div class="col-lg-6 footer-info" style="text-align: left; color: #fff;">
+          <img src= "img/sans back.png"alt="Serenity Springs" style="max-width: 180px; margin-bottom: 20px;">
+          <p style="font-size: 18px; line-height: 1.6; font-weight: 400;">
+            Welcome to <strong>Serenity Springs</strong>, where nature and agriculture come together to create sustainable solutions. Join us on our journey toward a green future, cultivating harmony with the Earth.
+          </p>
         </div>
+  
+        <!-- Contact Us Section (Right-Aligned) -->
+        <div class="col-lg-6 footer-contact" style="text-align: right; color: #fff; padding-left: 40px;">
+          <h4 style="font-size: 22px; color: #fff; font-weight: bold; margin-bottom: 20px;">Contact Us</h4>
+          <p style="font-size: 16px; line-height: 1.6;">
+            <strong>Serenity Springs</strong><br>
+            123 Green Valley Road<br>
+            Farmville, USA<br>
+            <strong>Phone:</strong> +1 123 456 7890<br>
+            <strong>Email:</strong> info@serenitysprings.com
+          </p>
+  
+          <!-- Social Links -->
+          <div class="social-links" style="margin-top: 30px;">
+            <a href="#" class="twitter" style="color: #55acee; padding: 10px; font-size: 20px; margin: 0 10px; transition: 0.3s; text-decoration: none;">
+              <i class="fa fa-twitter"></i>
+            </a>
+            <a href="#" class="facebook" style="color: #3b5998; padding: 10px; font-size: 20px; margin: 0 10px; transition: 0.3s; text-decoration: none;">
+              <i class="fa fa-facebook"></i>
+            </a>
+            <a href="#" class="instagram" style="color: #e4405f; padding: 10px; font-size: 20px; margin: 0 10px; transition: 0.3s; text-decoration: none;">
+              <i class="fa fa-instagram"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Footer Bottom Section -->
+      <div class="row" style="margin-top: 40px; border-top: 1px solid #ccc; padding-top: 20px;">
+        <div class="col-12" style="text-align: center; font-size: 14px; color: #ddd;">
+          <div class="copyright">
+            &copy; 2024 <strong>Serenity Springs</strong>. All Rights Reserved.
+          </div>
+          <div class="credits">
+            Designed by <a href="https://bootstrapmade.com/" style="color: #4CAF50; font-weight: 600; text-decoration: none;">BootstrapMade</a>
+          </div>
+        </div>
+      </div>
     </div>
- 
-    
-</footr>
+  </footer>
+  
+  <!-- Add this to your CSS for smooth hover effects and animations -->
+  <style>
+    footer a:hover {
+      transform: scale(1.1);
+      color: #4CAF50;
+    }
+  
+    .social-links a {
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  
+    .social-links a:hover {
+      background-color: #4CAF50;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+  
+  
+  
+  <!-- #footer -->
 
   <a href="#" class="back-to-top"><i class="fa fa-angle-up"></i></a>
 

@@ -10,6 +10,6 @@ if (isset($_GET['post_id'])) {
 }
 
 
-header("Location: ../post.php");
+header("Location: post.php");
 exit;
 ?>

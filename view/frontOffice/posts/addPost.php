@@ -4,61 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Post</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #d4e8d4, #9cbfa9);
+            color: #2e4d34;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 0;
-            padding: 0;
-            background-color: #f0f8ff; 
         }
-        form {
-            max-width: 500px;
-            margin: 40px auto; 
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background: #fff; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        .form-container {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            animation: fadeIn 1s ease-in-out;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-        input, textarea, button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         button {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
+            background-color: #5d946b;
+            color: #fff;
             border: none;
+            transition: transform 0.2s, background-color 0.3s;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #497a55;
+            transform: scale(1.05);
         }
         .error {
-            color: red;
-            margin-bottom: 10px;
-        }
-        .chatgpt-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .chatgpt-link a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .chatgpt-link a:hover {
-            text-decoration: underline;
+            color: #b33a3a;
+            font-size: 0.9rem;
         }
     </style>
 </head>
@@ -73,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $content = htmlspecialchars(trim($_POST['content']));
     $imagePath = null;
 
-    
     $bannedWords = ['damn', 'hell', 'idiot', 'stupid', 'fool', 'crap', 'bastard', 'jerk', 'moron', 'asshole', 'dumb', 'shit', 'bitch', 'f***', 'a**', 'c***', 'slut', 'whore'];
 
     foreach ($bannedWords as $word) {
@@ -83,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    
     if (!$error && isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         $uploadDir = '../../../uploads/';
@@ -99,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    
     if (!$error) {
         if (!preg_match('/^[A-Za-z0-9\s.,!?()-]+$/', $title)) {
             $error = "Invalid title: Only letters, numbers, spaces, and basic punctuation are allowed.";
@@ -108,45 +87,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (strlen($content) < 10) {
             $error = "Content must be at least 10 characters long.";
         } else {
-            
             $post = new Post(null, $title, $content, $imagePath);
             $postController = new PostController();
             $postController->addPost($post);
-
-            
-            header('Location: ../post.php');
+            header('Location: post.php');
             exit;
         }
     }
 }
 ?>
 
-<form action="" method="POST" enctype="multipart/form-data">
-    <?php if ($error): ?>
-        <div class="error"><?php echo $error; ?></div>
-    <?php endif; ?>
+<div class="form-container">
+    <form action="" method="POST" enctype="multipart/form-data">
+        <?php if ($error): ?>
+            <div class="alert alert-danger" role="alert"> <?php echo $error; ?> </div>
+        <?php endif; ?>
 
-    <label for="title">Title</label>
-    <input type="text" id="title" name="title" 
-           value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>" 
-           minlength="5" maxlength="100" 
-           pattern="^[A-Za-z0-9\s.,!?()-]+$" 
-           title="Only letters, numbers, spaces, and basic punctuation are allowed."
-           required>
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" 
+                   value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>" 
+                   minlength="5" maxlength="100" 
+                   pattern="^[A-Za-z0-9\s.,!?()-]+$" 
+                   title="Only letters, numbers, spaces, and basic punctuation are allowed."
+                   required>
+        </div>
 
-    <label for="content">Content</label>
-    <textarea id="content" name="content" 
-              minlength="10" 
-              required><?php echo htmlspecialchars($_POST['content'] ?? ''); ?></textarea>
+        <div class="mb-3">
+            <label for="content" class="form-label">Content</label>
+            <textarea class="form-control" id="content" name="content" rows="5" 
+                      minlength="10" required><?php echo htmlspecialchars($_POST['content'] ?? ''); ?></textarea>
+        </div>
 
-    <label for="image">Image</label>
-    <input type="file" id="image" name="image" accept="image/*">
+        <div class="mb-3">
+            <label for="image" class="form-label">Image</label>
+            <input class="form-control" type="file" id="image" name="image" accept="image/*">
+        </div>
 
-    <button type="submit">Add Post</button>
-</form>
+        <button type="submit" class="btn btn-success w-100">Add Post</button>
+    </form>
 
-<div class="chatgpt-link">
-    <p>Need help writing your post? Visit <a href="https://chat.openai.com/" target="_blank">ChatGPT</a> for assistance.</p>
+    
 </div>
 
 </body>

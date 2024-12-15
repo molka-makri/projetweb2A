@@ -370,7 +370,7 @@ fetchClimateData();
       // Check if there are any organizers to display
       if ($organizers && $organizers->rowCount() > 0) {
         $images = [
-          'img/speakers/1.jpg',
+          
           'img/speakers/2.jpg',
           'img/speakers/3.jpg',
           'img/speakers/4.jpg',

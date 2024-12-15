@@ -1,5 +1,6 @@
 <?php
-include_once 'C:\XAMPP\htdocs\Serenity Springs\Model\Payment.php';
+
+include(__DIR__ . '/../Model/Payment.php');
 // include_once __DIR__ . '/../config.php';  // Chemin relatif depuis le répertoire actuel
 
 
